@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet", href="style.css">
+    <title>Pet Ascension</title>
+    <script defer src="index.js"></script>
+</head>
+
+<h1>Pet Ascension</h1>
+
+<p>Welcome to pet ascenscion, insert explanation text here where I explain things in a short way</p>
+
+<form action="/createpet" method="post">
+
+    <label>What would you like to name your pet?
+        <input id="petname" name="petname" type="text" minlength="2", maxlength="16">
+    </label>
+
+    <div id="animaltype">
+        <label>Which animal would you like to make your pet?
+            <input type="radio", name="antype", id="animaltypedog", value="dog">
+            <label for="animaltypedog">Doggo</label>
+            <input type="radio", name="antype", id="animaltypecat", value="cat">
+            <label for="animaltypecat">Cat</label>
+            <input type="radio", name="antype", id="animaltypebunny", value="bunny">
+            <label for="animaltypebunny">Bunny</label>
+        </label>
+    </div>
+
+    <input value="Create my pet!", type="submit">
+
+
+</form>
+
+
+
+
+
+</html>
