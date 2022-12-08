@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
 
 app.post("/createpet",  async (req, res) =>{
     let data = await fs.readFile("server-side/pets.json")
-    pets = JSON.parse(data)
+    let pets = JSON.parse(data)   
     if (pets[req.body.petname] ===undefined){
         pets[req.body.petname] = {
                 type: req.body.antype,
@@ -43,6 +43,34 @@ app.post("/createpet",  async (req, res) =>{
 
 })
 
+app.get("/pets", async (req, res) => {
+    res.sendFile(path.join(path.resolve(__dirname, ".."), "/client-side/pets/index.html"));
+    res.sendFile(path.join(path.resolve(__dirname, ".."), "/client-side/pets/style.css"));
+    res.sendFile(path.join(path.resolve(__dirname, ".."), "/client-side/pets/index.js"));
+    //res.sendFile(path.join(path.resolve(__dirname, ".."), "/server-side/pets.json"));
+    
+    let data = await fs.readFile("server-side/pets.json")
+    let pets = JSON.parse(data)   
+    let petName = req.baseUrl.slice(5)
+    // if (pets[petName] !== undefined){
+    //     res.status(404).send("Bad Request")
+
+    // }
+    
+})
+
+app.get("/pets/*", async (req, res) => {
+    let data = await fs.readFile("server-side/pets.json")
+    let pets = JSON.parse(data)     
+    let petName = req.baseUrl.slice(5)
+    res.send(petName)
+    // if (pets[petName] !== undefined){
+    //     res.status(404).send("Bad Request")
+
+    // }
+    
+})
+
 // app.get("/api", (req, res) => {
 
 //     res.set("Content-Type", "application/json");
@@ -52,6 +80,6 @@ app.post("/createpet",  async (req, res) =>{
 app.listen(PORT, (req, res) => {
     
     console.log(`Listening on port ${PORT}`);
-   // open("https://localhost:8080")
+
     
 })
