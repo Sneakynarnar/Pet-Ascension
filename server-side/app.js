@@ -13,7 +13,7 @@ let data = {
 //app.use(express.static("./client-side/homepage"));
 app.use(express.urlencoded({extended: false}));
 app.use("/",express.static(path.join(__dirname, "../client-side")));
-//app.use("/pets", express.static(path.join(__dirname, "client-side/pets")))
+app.use("/pets", express.static(path.join(__dirname, "client-side/pets")))
 // app.get("/", (req, res) => {
 //     res.sendFile(path.join(path.resolve(__dirname, ".."), "/client-side/homepage/index.html"));
 // })
@@ -67,8 +67,10 @@ app.get("/api", async (req, res) => {
 
     res.set("Content-Type", "application/json");
     let data = await fs.readFile("server-side/pets.json")
-    let pets = JSON.parse(data)    
-    res.send(JSON.stringify(data));
+    let pets = JSON.parse(data)
+    console.log(pets)
+    
+    res.send(JSON.stringify(pets));
 })
 
 app.listen(PORT, (req, res) => {
