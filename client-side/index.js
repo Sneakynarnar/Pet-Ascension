@@ -24,8 +24,20 @@ function inputHandler(e) {
   }
 }
 
+function animalEmphasis(e){
+  console.log(document.querySelector("#dog").classList);
+  
+  document.querySelector("#dog").classList.add("hovered")
+
+}
+function animalDisemphasis(e){
+
+  document.querySelector("#dog").classList.remove("hovered")
+}
 function main() {
   document.querySelector("#petname").addEventListener("input", inputHandler);
+  document.querySelector("#dog").addEventListener("mouseover", animalEmphasis)
+  document.querySelector("#dog").addEventListener("mouseout", animalDisemphasis)
   console.log("Got to main!");
 }
 
