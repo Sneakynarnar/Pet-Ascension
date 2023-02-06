@@ -1,1 +1,2 @@
-{"hello":{"cleanliness":50,"hunger":50,"level":1,"rank":1}}
+{
+    "hello":{"cleanliness":50,"hunger":50,"level":1,"rank":1},"fredrick":{"type":"dog","cleanliness":50,"hunger":50,"level":1,"rank":1},"nigga":{"type":"dog","cleanliness":50,"hunger":50,"level":1,"rank":1},"lol":{"type":"dog","cleanliness":50,"hunger":50,"level":1,"rank":1},"shouldfixthis":{"type":"dog","cleanliness":50,"hunger":50,"level":1,"rank":1},"":{"type":"dog","cleanliness":50,"hunger":50,"level":1,"rank":1},"snaeku":{"type":"cat","cleanliness":50,"hunger":50,"level":1,"rank":1},"epicgamer":{"type":"bunny","cleanliness":50,"hunger":50,"level":1,"rank":1},"uuuuuuuu":{"type":"dog","cleanliness":50,"hunger":50,"level":1,"rank":1},"narnar":{"type":"dog","cleanliness":50,"hunger":50,"level":1,"rank":1}}

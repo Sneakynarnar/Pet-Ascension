@@ -4,9 +4,28 @@
  
     
 }
+.selected {
+
+    border: solid lime
+}
 
 svg {
 
     border: dashed red 
+
+}
+
+.animal {
+    
+    transform-origin: center;
+    transition: 0.5s ease-in-out;
+    
+
+
+}
+
+.animal:hover {
+    
+    transform: scale(1.1,1.1) 
 
 }

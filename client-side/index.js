@@ -1,10 +1,13 @@
+
+const inputBox = document.querySelector("#petname");
+const submit = document.querySelector("#postcreatereq");
+const invalidText = document.querySelector("#invalidText");
+
 function inputHandler(e) {
-  const inputBox = document.querySelector("#petname");
-  const submit = document.querySelector("#postcreatereq");
-  const invalidText = document.querySelector("#invalidText");
+
 
   const name = inputBox.value;
-  let allowedCharacters = "qwertyuiopasdfghjklzxcvbnm1234567890";
+  const allowedCharacters = "qwertyuiopasdfghjklzxcvbnm1234567890";
   console.log(name);
   let invalid = false;
   for (const char of name) {
@@ -24,8 +27,21 @@ function inputHandler(e) {
   }
 }
 
+async function createPetRequest(){
+
+  const petJson = {
+    name: inputBox.value,
+    animaltype: null,
+    animalcolors: null,
+
+
+  }
+
+}
+
 function main() {
   document.querySelector("#petname").addEventListener("input", inputHandler);
+  submit.addEventListener("onclick", createPetRequest)
   console.log("Got to main!");
 }
 
