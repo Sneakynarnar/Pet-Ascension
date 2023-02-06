@@ -39,6 +39,28 @@ async function createPetRequest(){
 
 }
 
+async function createPetRequest(){
+
+  const petJson = {
+    name: inputBox.value,
+    animaltype: null,
+    animalcolors: null,
+
+
+  }
+
+}
+
+function animalEmphasis(e){
+  console.log(document.querySelector("#dog").classList);
+  
+  document.querySelector("#dog").classList.add("hovered")
+
+}
+function animalDisemphasis(e){
+
+  document.querySelector("#dog").classList.remove("hovered")
+}
 function main() {
   document.querySelector("#petname").addEventListener("input", inputHandler);
   submit.addEventListener("onclick", createPetRequest)
