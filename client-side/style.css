@@ -6,7 +6,7 @@
 }
 .selected {
 
-    border: solid lime
+    border: solid lime 0.5em
 }
 
 svg {

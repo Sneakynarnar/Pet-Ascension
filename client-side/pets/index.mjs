@@ -7,7 +7,7 @@ async function getJson(){
 let pets = await getJson()
 const petList = document.querySelector("#petlist")
 for (const [name, attr] of Object.entries(pets)){
-    console.log(name);
+
 
     let listNode = document.createElement("li");
     

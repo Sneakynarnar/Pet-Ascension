@@ -2,21 +2,19 @@
 const inputBox = document.querySelector("#petname");
 const submit = document.querySelector("#postcreatereq");
 const invalidText = document.querySelector("#invalidText");
-
+let selectedAnimal = null
 function inputHandler(e) {
 
 
   const name = inputBox.value;
   const allowedCharacters = "qwertyuiopasdfghjklzxcvbnm1234567890";
-  console.log(name);
   let invalid = false;
   for (const char of name) {
     if (!allowedCharacters.includes(char)) {
       inputBox.classList.add("invalid");
       invalid = true;
       submit.disabled = true;
-      invalidText.textContent =
-        "Only lower case letters and numbers are allowed.";
+      invalidText.textContent = "Only lower case letters and numbers are allowed.";
       break;
     }
   }
@@ -28,20 +26,48 @@ function inputHandler(e) {
 }
 
 async function createPetRequest(){
+  if (selectedAnimal === null){
+    invalidText.textContent = "You have not selected an animal type!"
+  } else {
 
+    invalidText.textContent= ""
+  }
   const petJson = {
     name: inputBox.value,
-    animaltype: null,
+    animaltype: selectedAnimal,
     animalcolors: null,
 
 
   }
+  console.log(petJson)
+  
 
 }
 
+
+async function selectAnimal(e){
+  document.querySelector("#dog").classList.remove("selected")
+  document.querySelector("#cat").classList.remove("selected")
+  document.querySelector("#bunny").classList.remove("selected")
+  
+  e.target.classList.add("selected")
+  console.log(e.target.id)
+  
+  selectedAnimal=e.target.id
+
+
+
+}
 function main() {
   document.querySelector("#petname").addEventListener("input", inputHandler);
-  submit.addEventListener("onclick", createPetRequest)
+  console.log(document.querySelector("#dog")
+  )
+  
+  document.querySelector("#dog").addEventListener("click", selectAnimal)
+  document.querySelector("#cat").addEventListener("click", selectAnimal)
+  document.querySelector("#bunny").addEventListener("click", selectAnimal)
+  
+  submit.addEventListener("click", createPetRequest)
   console.log("Got to main!");
 }
 
