@@ -28,20 +28,24 @@ function inputHandler(e) {
 async function createPetRequest(){
   if (selectedAnimal === null){
     invalidText.textContent = "You have not selected an animal type!"
+    return
   } else {
-
     invalidText.textContent= ""
   }
   const petJson = {
     name: inputBox.value,
     animaltype: selectedAnimal,
     animalcolors: null,
-
-
   }
-  console.log(petJson)
-  
-
+  console.log(petJson);
+  const response = await fetch("/pets", {
+    method: "POST",
+    headers: {"Content-Type": "applications/json"},
+    body: JSON.stringify(petJson)
+  })
+  if (!response.ok){
+    console.log('Message gonna uh lol');
+  }
 }
 
 

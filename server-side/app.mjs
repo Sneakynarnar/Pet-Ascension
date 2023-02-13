@@ -1,11 +1,11 @@
 import express from 'express'
 import fs from 'fs/promises'
-
 const app = express();
 const PORT = 8080;
 let data = fs.readFile("server-side/pets.json")
 
 //app.use(express.static("./client-side/homepage"));
+app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use("/",express.static("client-side"));
 //app.use("/pets", express.static(path.join(__dirname, "client-side/pets")))
@@ -16,9 +16,14 @@ app.use("/",express.static("client-side"));
 
 async function createPet(req, res){
     let data = await fs.readFile("server-side/pets.json");
-    let pets = JSON.parse(data);   
-    if (pets[req.body.petname] ===undefined){
-        pets[req.body.petname.toLowerCase()] = {
+    let pets = JSON.parse(data); 
+    console.log('hello!');
+    
+    console.log(req.body);
+    if (pets[req.body.name] ===undefined){
+        
+        
+        pets[req.body.name.toLowerCase()] = {
                 type: req.body.antype,
                 cleanliness: 50,
                 hunger: 50,
@@ -52,11 +57,9 @@ async function showSpecificPet(req, res){
     res.send(petName);
 }
 
-app.get("/pets", createPet);
+app.post("/pets", express.json, createPet);
 app.get("/pets", showAllPets);
-
 app.get("/pets/:petName", showSpecificPet);
-
 app.get("/api", async (req, res) => {
 
     res.set("Content-Type", "application/json");
@@ -66,6 +69,5 @@ app.get("/api", async (req, res) => {
 });
 
 app.listen(PORT, (req, res) => {
-    //open("http://localhost:8080");
     console.log(`Listening on port ${PORT}`);    
 });
