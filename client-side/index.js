@@ -40,7 +40,7 @@ async function createPetRequest(){
   console.log(petJson);
   const response = await fetch("/pets", {
     method: "POST",
-    headers: {"Content-Type": "applications/json"},
+    headers: {"Content-Type": "application/json"},
     body: JSON.stringify(petJson)
   })
   if (!response.ok){
