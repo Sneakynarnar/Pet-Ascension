@@ -7,6 +7,16 @@
   "scripts": {
     "start": "node server-side/app.mjs",
     "db": "nodemon server-side/app.mjs"
-
+  },
+  "devDependencies": {
+    "elint": "^2.0.1",
+    "eslint-config-portsoc": "^1.0.1"
+  },
+  "eslintConfig": {
+    "extends": "portsoc",
+    "root": true,
+    "env": {
+      "browser": true
+    }
   }
 }
