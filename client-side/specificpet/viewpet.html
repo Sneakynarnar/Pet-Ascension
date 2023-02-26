@@ -3,14 +3,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type=module defer src='/specificpet/viewpet.mjs'></script>
     <title id="title"></title>
 </head>
 <body>
     <h1 id="petname"></h1>
-    
-    <meter id="hunger"></meter>
-    <meter id="cleanliness"></meter>
-    <meter id="happiness"></meter>
-    
+    <div id="petcontainer"></div>
+    <meter id="hunger" max="100" min="0">Hunger</meter>
+    <meter id="cleanliness" max="100" min="0">Cleanliness</meter>
+    <meter id="happiness" max="100" min="0">Happiness</meter>
+    <button id="feed">Feed</button>
+    <button id="clean">Clean</button>
+    <button id="play">Play</button>
 </body>
 </html>

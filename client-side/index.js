@@ -36,7 +36,7 @@ async function createPetRequest() {
     animalcolors: null,
   };
   console.log(petJson);
-  const response = await fetch('/pets', {
+  const response = await fetch('http://localhost:8080/pets', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(petJson),

@@ -27,9 +27,10 @@ async function createPet(req, res) {
   if (pets[req.body.name] === undefined) {
     const defaultLastInteract = Date.now() - 36000000; // Last interact by default is set to 5 hours ago
     const now = Date.now();
+    console.log(req.body.antype);
     pets[req.body.name.toLowerCase()] = {
       dateCreated: now,
-      type: req.body.antype,
+      type: req.body.animaltype,
       cleanliness: 100,
       happiness: 100,
       hunger: 100,
@@ -45,6 +46,7 @@ async function createPet(req, res) {
     res.send('A pet already exists with that name!');
   }
   fs.writeFile('server-side/pets.json', JSON.stringify(pets));
+  res.send('Created pet!');
 }
 
 
@@ -62,7 +64,7 @@ async function updatePets() {
     value.last_clean_update = now;
     value.last_updated = now;
     if (value.hunger <= 0) {
-      pet.dead = true;
+      value.dead = true;
     }
     pets[pet] = value;
   }
@@ -71,10 +73,12 @@ async function updatePets() {
   return pets;
 }
 async function showAllPets(req, res) {
+  updatePets();
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/pets/index.html'));
   const data = await fs.readFile('server-side/pets.json');
 }
 async function showSpecificPet(req, res) {
+  updatePets();
   const petName = req.params.petName;
   const pets = await getJson();
   if (pets[petName] === undefined) {

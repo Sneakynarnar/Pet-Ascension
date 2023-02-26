@@ -1,0 +1,36 @@
+<svg width="200", height="200" class="animal" id="dog">
+    <!-- reference: https://www.pinterest.ca/pin/62276407321827635/ -->
+    <g id="dog" stroke-width="3" stroke="black">
+    <!--60, 20-->
+        <rect x="60" y="20" width="80" height="150" stroke="black" stroke-width="3" style="fill:#e26b09; " />
+
+        <g id="ears">
+            <polygon points="60,20 30,20, 30,80" stroke="black" stroke-width="3"/>
+            <polygon points="140,20 170,20, 170,80" stroke="black" stroke-width="3"/>
+        </g>
+        <g id="legs">
+            <rect x="40" y="130" width="20" height="40" stroke="black" stroke-width="3" fill="#e26b09"/>
+            <rect x="140" y="130" width="20" height="40" stroke="black" stroke-width="3" fill="#e26b09"/>
+            <rect x="70" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#e26b09"/>
+            <rect x="110" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#e26b09"/>
+            <g id="claws">
+                <polygon points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
+                <polygon points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
+                <polygon points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
+                <polygon points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
+
+                <polygon points="74,180, 74,175 76,173 78,175, 78,180" stroke="black"/>
+                <polygon points="82,180, 82,175 84,173 86,175, 86,180" stroke="black"/>
+                <polygon points="114,180, 114,175 116,173 118,175, 118,180" stroke="black"/>
+                <polygon points="122,180, 122,175 124,173 126,175, 126,180" stroke="black"/>
+            </g>
+        </g>
+        <g id="face">
+            <rect x="89" y="45" width="23" height="15" stroke="black" stroke-width="3" fill="#e26bff"/>
+            <circle cx="80" cy="40" r="4"/>
+            <circle cx="120" cy="40" r="4"/>
+            <polyline points="70,65  78,75  120,75 128,65 " fill="#e26b09" stroke="black" stroke-width="3"/>
+            <line x1="103" y1="75" x2="99" y2="60"  stroke="black" stroke-width="3"/>
+        </g>
+    </g>
+</svg>
