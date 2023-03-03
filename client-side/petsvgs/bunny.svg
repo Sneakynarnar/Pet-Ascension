@@ -16,8 +16,8 @@
         <line x1="100" y1="68" x2="100" y2="78"  stroke="black" stroke-width="3"/>
         <circle cx="90" cy="40" r="4"/>
         <circle cx="110" cy="40" r="4"/>
-        <rect x="90", y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
-        <rect x="100", y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
+        <rect x="90" y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
+        <rect x="100" y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
     </g>
     <g id="legs">
         <rect x="40" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
@@ -37,4 +37,4 @@
         </g>
     </g>
 
-</svg>
+</svg>d

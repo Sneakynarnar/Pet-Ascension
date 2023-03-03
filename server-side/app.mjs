@@ -16,6 +16,7 @@ const HUNGER_DECAY = 3;
 const CLEANLINESS_DECAY = 5;
 const HAPPINESS_DECAY = 6;
 
+const BASE_NP_RATE = 5;
 async function getJson() {
   const data = await fs.readFile('server-side/pets.json');
   const pets = JSON.parse(data);
