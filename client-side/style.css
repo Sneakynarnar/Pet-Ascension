@@ -1,0 +1,9 @@
+.invalid:focus {
+  background: #ff000022;
+}
+.success {
+  color: lime
+}
+.faliure {
+  color: red
+}

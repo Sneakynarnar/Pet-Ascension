@@ -17,10 +17,10 @@ const CLEANLINESS_DECAY = 5;
 const HAPPINESS_DECAY = 6;
 
 const BASE_NP_RATE = 5;
-async function getJson() {
+async function getAccountJson(accountId) {
   const data = await fs.readFile('server-side/pets.json');
   const pets = JSON.parse(data);
-  return pets;
+  return pets[accountId].pets;
 }
 async function createPet(req, res) {
   const data = await fs.readFile('server-side/pets.json');
@@ -51,7 +51,7 @@ async function createPet(req, res) {
 }
 
 
-async function updatePets() {
+async function updatePets(accountId) {
   const pets = await getJson();
   const hour = 1000 * 3600;
   let now = Date.now();
@@ -73,15 +73,16 @@ async function updatePets() {
   console.log(pets);
   return pets;
 }
-async function showAllPets(req, res) {
+function showAllPets(req, res) {
   updatePets();
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/pets/index.html'));
-  const data = await fs.readFile('server-side/pets.json');
+  // const data = await fs.readFile('server-side/pets.json');
 }
 async function showSpecificPet(req, res) {
-  updatePets();
+  const accountId = req.params.accountId;
   const petName = req.params.petName;
-  const pets = await getJson();
+  updatePets(accountId);
+  const pets = await getAccountJson(accountId);
   if (pets[petName] === undefined) {
     res.status(404).end('Not found');
     return;
@@ -91,7 +92,7 @@ async function showSpecificPet(req, res) {
 
 async function getPetJson(req, res) {
   res.set('Content-Type', 'application/json');
-  const pets = await getJson();
+  const pets = await getAccountJson(req.params.accountId);
   if (pets[req.params.petName] === undefined) {
     res.status(404).end('Not found');
     return;
@@ -101,15 +102,27 @@ async function getPetJson(req, res) {
 
 async function getAllPetJson(req, res) {
   res.set('Content-Type', 'application/json');
-  const pets = await getJson();
+  const pets = await getAccountJson(req.params.accountId);
   res.json(pets);
 }
-
-app.post('/pets', express.json(), createPet);
-app.get('/pets', showAllPets);
-app.get('/pets/:petName', showSpecificPet);
-app.get('/api', getAllPetJson);
-app.get('/api/:petName', getPetJson);
+async function createAccount(req, res) {
+  const data = await fs.readFile('server-side/pets.json');
+  const pets = JSON.parse(data);
+  const name = req.body.username;
+  if (pets[name] === undefined) {
+    pets[name].pets = {};
+    pets[name].np = 0;
+  } else {
+    res.sendStatus(400).send("User already in system")
+    
+  }
+}
+app.post('/createaccount', express.json(), createAccount);
+app.post(':accountId/pets', express.json(), createPet);
+app.get(':accountId/pets', showAllPets);
+app.get(':accountId/pets/:petName', showSpecificPet);
+app.get(':accountId/api', getAllPetJson);
+app.get(':accountId/api/:petName', getPetJson);
 
 
 app.listen(PORT, () => {
