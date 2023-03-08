@@ -113,12 +113,15 @@ async function createAccount(req, res) {
     pets[name].pets = {};
     pets[name].np = 0;
   } else {
-    res.sendStatus(400).send("User already in system")
-    
+    res.sendStatus(400).send('User already in system');
   }
 }
+
+app.get('/auth', (req, res) => {
+  res.sendFile(path.resolve('client-side/pets/index.html'));
+});
 app.post('/createaccount', express.json(), createAccount);
-app.post(':accountId/pets', express.json(), createPet);
+app.post(':accountId/pets/create', express.json(), createPet);
 app.get(':accountId/pets', showAllPets);
 app.get(':accountId/pets/:petName', showSpecificPet);
 app.get(':accountId/api', getAllPetJson);

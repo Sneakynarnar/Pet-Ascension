@@ -19,6 +19,13 @@ async function loadPets() {
   }
 }
 async function main() {
+  const frag = new URLSearchParams(window.location.hash.slice(1));
+  const [accessToken, authType] = [frag.get('access_token'), frag.get('token_type')];
+
+  if (accessToken === undefined){
+    window.location="http://localhost:8080/"
+
+  }
   await loadPets();
 }
 
