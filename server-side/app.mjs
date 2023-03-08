@@ -1,6 +1,10 @@
 import express from 'express';
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const app = express();
 const PORT = 8080;
 // app.use(express.static("./client-side/homepage"));
@@ -118,7 +122,7 @@ async function createAccount(req, res) {
 }
 
 app.get('/auth', (req, res) => {
-  res.sendFile(path.resolve('client-side/pets/index.html'));
+  res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/pets/index.html'));
 });
 app.post('/createaccount', express.json(), createAccount);
 app.post(':accountId/pets/create', express.json(), createPet);
