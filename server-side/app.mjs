@@ -1,8 +1,8 @@
 import express from 'express';
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
@@ -19,17 +19,26 @@ app.use('/', express.static('client-side'));
 const HUNGER_DECAY = 3;
 const CLEANLINESS_DECAY = 5;
 const HAPPINESS_DECAY = 6;
-
-const BASE_NP_RATE = 5;
+// const BASE_NP_RATE = 5;
 async function getAccountJson(accountId) {
   const data = await fs.readFile('server-side/pets.json');
-  const pets = JSON.parse(data);
-  return pets[accountId].pets;
+  const accounts = JSON.parse(data);
+  if (accounts[accountId] === undefined) {
+    accounts[accountId] = {
+      NP: 100,
+      pets: {},
+    };
+    console.log(accounts);
+    
+    fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
+  }
+  return accounts[accountId].pets;
 }
 async function createPet(req, res) {
   const data = await fs.readFile('server-side/pets.json');
-  const pets = JSON.parse(data);
-  if (pets[req.body.name] === undefined) {
+  const accounts = JSON.parse(data);
+  const pets = accounts[req.body.id].pets;
+  if (pets === {}) {
     const defaultLastInteract = Date.now() - 36000000; // Last interact by default is set to 5 hours ago
     const now = Date.now();
     console.log(req.body.antype);
@@ -50,13 +59,18 @@ async function createPet(req, res) {
   } else {
     res.send('A pet already exists with that name!');
   }
-  fs.writeFile('server-side/pets.json', JSON.stringify(pets));
+  try {
+    fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
+  } catch (error) {
+    console.log(accounts);
+    res.send(error);
+  }
   res.send('Created pet!');
 }
 
 
 async function updatePets(accountId) {
-  const pets = await getJson();
+  const pets = await getAccountJson(accountId);
   const hour = 1000 * 3600;
   let now = Date.now();
   for (const [pet, value] of Object.entries(pets)) {
@@ -73,12 +87,16 @@ async function updatePets(accountId) {
     }
     pets[pet] = value;
   }
-  await fs.writeFile('server-side/pets.json', JSON.stringify(pets));
+  try {
+    await fs.writeFile('server-side/pets.json', JSON.stringify(pets));
+  } catch (error) {
+    return error;
+  }
   console.log(pets);
   return pets;
 }
 function showAllPets(req, res) {
-  updatePets();
+  updatePets(req.params.accountId);
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/pets/index.html'));
   // const data = await fs.readFile('server-side/pets.json');
 }
@@ -109,27 +127,28 @@ async function getAllPetJson(req, res) {
   const pets = await getAccountJson(req.params.accountId);
   res.json(pets);
 }
-async function createAccount(req, res) {
-  const data = await fs.readFile('server-side/pets.json');
-  const pets = JSON.parse(data);
-  const name = req.body.username;
-  if (pets[name] === undefined) {
-    pets[name].pets = {};
-    pets[name].np = 0;
-  } else {
-    res.sendStatus(400).send('User already in system');
-  }
-}
-
-app.get('/auth', (req, res) => {
+// async function createAccount(req, res) {
+//   const data = await fs.readFile('server-side/pets.json');
+//   const pets = JSON.parse(data);
+//   const name = req.body.username;
+//   if (pets[name] === undefined) {
+//     pets[name].pets = {};
+//     pets[name].np = 0;
+//   } else {
+//     res.sendStatus(400).send('User already in system');
+//   }
+// }
+app.get('/pets', (req, res) => {
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/pets/index.html'));
 });
-app.post('/createaccount', express.json(), createAccount);
-app.post(':accountId/pets/create', express.json(), createPet);
-app.get(':accountId/pets', showAllPets);
-app.get(':accountId/pets/:petName', showSpecificPet);
-app.get(':accountId/api', getAllPetJson);
-app.get(':accountId/api/:petName', getPetJson);
+app.get('/pets/create', (req, res) => {
+  res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/createpet/index.html'));
+});
+app.post('/pets/create', express.json(), createPet);
+app.get('/pets', showAllPets);
+app.get('/pets/:accountId/:petName', showSpecificPet);
+app.get('/api/:accountId', getAllPetJson);
+app.get('/api/:accountId/:petName', getPetJson);
 
 
 app.listen(PORT, () => {
