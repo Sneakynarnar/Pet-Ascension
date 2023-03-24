@@ -14,12 +14,15 @@ async function loadPets(id) {
     const noPets = document.querySelector('#noPets');
     const frag = new URLSearchParams(window.location.hash.slice(1));
     const [accessToken, authType] = [frag.get('access_token'), frag.get('token_type')];
-    noPets.innerHTML= `It seems like you haven\'t creates any pets <a href="http://localhost:8080/pets/create/#token_type=${authType}&access_token=${accessToken}">Click here!</a> to create your pet`;
+    // const link = document.createElement('a');
+    // link.href = `http://localhost:8080/pets/create/#token_type=${authType}&access_token=${accessToken}`;
+    // link.textContent = 'Click here';
+    noPets.innerHTML = `It seems like you haven't creates any pets <a href="http://localhost:8080/pets/create/#token_type=${authType}&access_token=${accessToken}">Click here!</a> to create your pet`;
   }
   for (const [name, attr] of Object.entries(pets)) {
     listNode = document.createElement('li');
     link = document.createElement('a');
-    link.href = 'http://localhost:8080/pets/' + name.toLowerCase();
+    link.href = `http://localhost:8080/pets/${id}/${name.toLowerCase()}`;
     link.textContent = name;
     listNode.append(link);
     petList.append(listNode);

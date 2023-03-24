@@ -1,13 +1,8 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
     <svg xmlns="http://www.w3.org/2000/svg">
 
     <g id="main">
         <polygon points="60,20 80,40 120,40 140,20 140,170 60,170" stroke="black" stroke-width="3" fill="#CCCCCC"/>
-        
-        
-        
-
     </g>
     <g id="face">
         <polygon points="100,80 90,65 110,65" fill="#e26bFF" stroke="black" stroke-width="3"/>
