@@ -1,15 +1,19 @@
 
 
 async function getJson(id) {
+  console.log('in getJson');
   const response = await fetch(`http://localhost:8080/api/${id}`);
   const pets = await response.json();
-  return pets;
+  console.log(response);
+  return pets.pets;
 }
 async function loadPets(id) {
+  console.log('im here');
   const petList = document.querySelector('#petlist');
   const pets = await getJson(id);
   let listNode;
   let link;
+  console.log(pets);
   if (Object.entries(pets).length === 0) {
     const noPets = document.querySelector('#noPets');
     const frag = new URLSearchParams(window.location.hash.slice(1));

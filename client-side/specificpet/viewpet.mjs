@@ -6,11 +6,13 @@ const hungerMeter = document.querySelector('#hunger');
 const petNameTitle = document.querySelector('#petname');
 const petContainer = document.querySelector('#petcontainer');
 const NPamount = document.querySelector('#NP');
-const playButton = document.querySelector('')
+const playButton = document.querySelector('#play');
+const cleanButton = document.querySelector('#clean');
+const feedButton = document.querySelector('#feed');
+const petName = window.location.pathname.slice(25);
+const apiPath = window.location.pathname.slice(6);
 
 async function updateMeters() {
-  const petName = window.location.pathname.slice(25);
-  const apiPath = window.location.pathname.slice(6);
   const response = await fetch('http://localhost:8080/api/' + apiPath);
   const petStats = await response.json();
   const petSvg = document.createElement('object');
@@ -20,7 +22,9 @@ async function updateMeters() {
   petSvg.width = 200;
   petSvg.height = 200;
   console.log(petSvg);
-  petContainer.appendChild(petSvg);
+  if (petContainer.children.length === 0) {
+    petContainer.appendChild(petSvg);
+  }
   NPamount.textContent = `NP: ${petStats.NP}`;
   petNameTitle.textContent = petName;
   happinessMeter.value = petStats.happiness;
@@ -28,16 +32,20 @@ async function updateMeters() {
   cleanMeter.value = petStats.cleanliness;
 }
 
-async function play(e){
-  
+async function petPlay(e) {
+  console.log('playing');
+  const response = await fetch('http://localhost:8080/api/' + apiPath + '/play', {
+    method: 'POST',
+  });
+  if (response.ok) {
+    await updateMeters();
+  } else {
+    console.log('pet too tired to play');
+  }
 }
-// function loadPet(){
-
-// }
-
 
 async function main() {
   await updateMeters();
-
+  playButton.addEventListener('click', petPlay);
 }
 window.addEventListener('load', main);
