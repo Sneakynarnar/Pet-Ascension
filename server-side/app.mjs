@@ -13,9 +13,9 @@ app.use('/', express.static('client-side'));
 const hour = 1000 * 3600;
 const HUNGER_DECAY = 3;
 const CLEANLINESS_DECAY = 5;
-const HAPPINESS_DECAY = 6;
+const HAPPINESS_DECAY = 3000;
 const ALLOWED_PLAYS_PER_SESSION = 3;
-const PLAY_COOLDOWN_HOURS = 2;
+const PLAY_COOLDOWN_HOURS = 1 / 360;
 const FEED_COOLDOWN_HOURS = 3;
 async function getAccountJson(accountId) {
   const data = await fs.readFile('server-side/pets.json');
@@ -24,6 +24,8 @@ async function getAccountJson(accountId) {
     accounts[accountId] = {
       NP: 100,
       pets: {},
+      foodItems: {},
+      cleanItems: {},
     };
     console.log(accounts);
     await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
@@ -54,6 +56,7 @@ async function createPet(req, res) {
       happiness: 100,
       hunger: 100,
       level: 1,
+      XP: 0,
       rank: 1,
       last_feed_update: defaultLastInteract,
       last_play_update: defaultLastInteract,
@@ -78,6 +81,9 @@ async function updatePets(accountId) {
     value.hunger -= Math.round(((now - value.last_feed_update) / hour) * HUNGER_DECAY);
     value.happiness -= Math.round(((now - value.last_play_update) / hour) * HAPPINESS_DECAY);
     value.cleanliness -= Math.round(((now - value.last_clean_update) / hour) * CLEANLINESS_DECAY);
+    value.hunger = value.hunger < 0 ? 0 : value.hunger;
+    value.cleanliness = value.cleanliness < 0 ? 0 : value.cleanliness;
+    value.happiness = value.happiness < 0 ? 0 : value.happiness;
     now = Date.now();
     value.last_feed_update = now;
     value.last_play_update = now;
@@ -153,17 +159,21 @@ async function petPlay(req, res) {
   const account = accounts[req.params.accountId];
   const lastPlayed = now - account.pets[req.params.petName].last_play_update;
   const playCount = account.pets[req.params.petName].playCount;
-  if (lastPlayed > hour * PLAY_COOLDOWN_HOURS || playCount <= PLAY_COOLDOWN_HOURS) {
-    if (playCount === ALLOWED_PLAYS_PER_SESSION) {
-      account.pets[req.params.petName].last_play_update = Date.now();
-      account.pets[req.params.petName].playCount = 0;
+  console.log(` lastPlayed: ${lastPlayed} cooldown: ${hour * PLAY_COOLDOWN_HOURS}`);
+  if (lastPlayed > hour * PLAY_COOLDOWN_HOURS || playCount <= ALLOWED_PLAYS_PER_SESSION) {
+    if (lastPlayed >= hour * PLAY_COOLDOWN_HOURS) { account.pets[req.params.petName].playCount = 0; }
+    if (account.pets[req.params.petName].playCount >= ALLOWED_PLAYS_PER_SESSION) {
+      res.status(403).end(`Exceeded plays per ${PLAY_COOLDOWN_HOURS} hour(s) `);
+      return;
     }
+    
     account.pets[req.params.petName].happiness += 20;
     account.pets[req.params.petName].playCount++;
+    account.pets[req.params.petName].last_play_update = now;
     await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
     res.status(200).end('Happiness increased');
   } else {
-    res.status(403).end('Forbidden');
+    res.status(403).end('Cannot feed pet');
   }
 }
 async function petFeed(req, res) {
@@ -172,7 +182,6 @@ async function petFeed(req, res) {
   const accounts = JSON.parse(accountsData);
   const account = accounts[req.params.accountId];
   const lastFed = now - account.pets[req.params.petName].last_feed_update;
-  
   if (lastFed * FEED_COOLDOWN_HOURS) {
 
   }
