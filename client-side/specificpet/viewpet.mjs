@@ -5,6 +5,7 @@ const cleanMeter = document.querySelector('#cleanliness');
 const hungerMeter = document.querySelector('#hunger');
 const petNameTitle = document.querySelector('#petname');
 const petContainer = document.querySelector('#petcontainer');
+const linkContainer = document.querySelector('#linkcontainer');
 const NPamount = document.querySelector('#NP');
 const playButton = document.querySelector('#play');
 const cleanButton = document.querySelector('#clean');
@@ -43,9 +44,26 @@ async function petPlay(e) {
     console.log('pet too tired to play');
   }
 }
+async function petFeed(e) { 
+  console.log('playing');
+  const response = await fetch('http://localhost:8080/api/' + apiPath + '/feed', {
+    method: 'POST',
+  });
+  if (response.ok) {
+    await updateMeters();
+  } else {
+    console.log('pet too tired to play');
+  }
+}
 
 async function main() {
   await updateMeters();
   playButton.addEventListener('click', petPlay);
+  feedButton.addEventListener('click', petFeed);
+  const shopLink = document.createElement('a');
+  shopLink.href = 'https://localhost:8080/' + 'shop' + window.location.pathname.slice(5, 23);
+  shopLink.textContent = 'Go to the shop!';
+  linkContainer.appendChild(shopLink);
+  console.log(shopLink);
 }
 window.addEventListener('load', main);
