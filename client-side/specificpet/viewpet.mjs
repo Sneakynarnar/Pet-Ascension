@@ -61,7 +61,7 @@ async function main() {
   playButton.addEventListener('click', petPlay);
   feedButton.addEventListener('click', petFeed);
   const shopLink = document.createElement('a');
-  shopLink.href = 'https://localhost:8080/' + 'shop' + window.location.pathname.slice(5, 23);
+  shopLink.href = 'http://localhost:8080/' + 'shop' + window.location.pathname.slice(5, 24);
   shopLink.textContent = 'Go to the shop!';
   linkContainer.appendChild(shopLink);
   console.log(shopLink);

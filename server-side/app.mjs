@@ -17,11 +17,15 @@ const HAPPINESS_DECAY = 3000;
 const ALLOWED_PLAYS_PER_SESSION = 3;
 const PLAY_COOLDOWN_HOURS = 1 / 360;
 const FEED_COOLDOWN_HOURS = 3;
-const ITEMS = {cleaning: { 'Soap': 20, 'Super Soap': 40, 'Ultra Soap': 90 }, feeding: ['Donut', 'Super Donut', 'Ultra Donut'] };
-async function readAccountJson(accountId) {
+const ITEMS = { soap: { name: 'Soap', cost: 20, type: 0, value: 25 }, supersoap: { name: 'Super Soap', cost: 40, type: 0, value: 50 }, ultrasoap: { name: 'Ultra Soap', cost: 70, type: 0, value: 100 }, donut: { cost: 30, name: 'Donut', type: 1, value: 25 }, superdonut: { cost: 50, name: 'Super Donut', type: 1, value: 50 }, ultradonut: { cost: 90, name: 'Ultra Donut', type: 1, value: 75 } };
+async function readAccountJson(accountId = null) {
   const accountsData = await fs.readFile('server-side/pets.json');
   const accounts = JSON.parse(accountsData);
-  return accounts[req.params.accountId];
+  if (accountId !== null) {
+    return accounts[accountId];
+  } else {
+    return accounts;
+  }
 }
 async function createPet(req, res) {
   console.log('Creating pet');
@@ -34,8 +38,7 @@ async function createPet(req, res) {
     accounts[req.body.id] = {
       NP: 100,
       pets: {},
-      foodItems: {},
-      cleanItems: {},
+      items: {},
     };
     pets = accounts[req.body.id].pets;
   }
@@ -102,8 +105,8 @@ async function showSpecificPet(req, res) {
   const account = await readAccountJson(req.params.accountId);
   const petName = req.params.petName;
   await updatePets(req.params.accountId);
-  if (accounts[req.params.accountId]?.pets[petName] === undefined) {
-    res.status(404).end(`Couldn't find this pet :( ${JSON.stringify(accounts)}`);
+  if (account?.pets[petName] === undefined) {
+    res.status(404).end(`Couldn't find this pet :( ${JSON.stringify(account)}`);
     return;
   }
   res.sendFile(path.resolve('client-side/specificpet/viewpet.html'));
@@ -132,6 +135,7 @@ async function getAllAccountJson(req, res) {
       accounts[req.params.accountId] = {
         NP: 100,
         pets: {},
+        items: {},
       };
       console.log(accounts);
       await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
@@ -142,7 +146,8 @@ async function getAllAccountJson(req, res) {
 
 async function petPlay(req, res) {
   const now = Date.now();
-  const account = await readAccountJson(req.params.accountId);
+  const accounts = await readAccountJson();
+  const account = accounts[req.params.accountId];
   const lastPlayed = now - account.pets[req.params.petName].last_play_update;
   const playCount = account.pets[req.params.petName].playCount;
   console.log(` lastPlayed: ${lastPlayed} cooldown: ${hour * PLAY_COOLDOWN_HOURS}`);
@@ -174,8 +179,31 @@ async function petFeed(req, res) {
     res.status(403).end('Pet refusing to eat');
   }
 }
-async function petClean(req, res) {
+async function petClean(req, res){
 
+}
+
+async function purchaseItem(req, res) {
+  const accounts = await readAccountJson();
+  const account = accounts[req.params.accountId];
+  const item = ITEMS[req.params.item];
+  if (item !== undefined) {
+    if (account.NP > item.cost) {
+      account.NP -= item.cost;
+      if (account.items[req.params.item] !== undefined) {
+        account.items[req.params.item] += 1;
+      } else {
+        account.items[req.params.item] = 1;
+      }
+    } else {
+      res.status(403).end('Not enough NP');
+      return;
+    }
+    res.json(account);
+    await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
+  } else {
+    res.status(404).end('Item not found');
+  }
 }
 app.get('/pets', (req, res) => {
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/pets/index.html'));
@@ -183,9 +211,7 @@ app.get('/pets', (req, res) => {
 app.get('/pets/create', (req, res) => {
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/createpet/index.html'));
 });
-app.post('/shop/:accountId/', (req, res) => {
-  res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/shop/index.html'));
-});
+
 app.get('/shop/:accountId/items', async (req, res) => {
   res.json({
     shop: ITEMS,
@@ -195,6 +221,7 @@ app.get('/shop/:accountId/items', async (req, res) => {
 app.get('/shop/:accountId/', (req, res) => {
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/shop/index.html'));
 });
+app.post('/shop/:accountId/:item', express.json(), purchaseItem);
 app.post('/pets/create', express.json(), createPet);
 app.post('/api/:accountId/:petName/play', petPlay);
 app.post('/api/:accountId/:petName/feed', petFeed);
