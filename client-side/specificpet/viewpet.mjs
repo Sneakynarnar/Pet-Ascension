@@ -10,9 +10,14 @@ const NPamount = document.querySelector('#NP');
 const playButton = document.querySelector('#play');
 const cleanButton = document.querySelector('#clean');
 const feedButton = document.querySelector('#feed');
-const petName = window.location.pathname.slice(25);
-const apiPath = window.location.pathname.slice(6);
+const feedDialog = document.querySelector('#feeddialog');
+const feedSelectMenu = document.querySelector('#feedselect');
+const confirmFeed = document.querySelector("#confirmfeed");
 
+const petName = window.location.pathname.slice(25);
+const accountId = window.location.pathname.slice(6, 24);
+const apiPath = window.location.pathname.slice(6);
+let payload;
 async function updateMeters() {
   const response = await fetch('http://localhost:8080/api/' + apiPath);
   const petStats = await response.json();
@@ -44,15 +49,33 @@ async function petPlay(e) {
     console.log('pet too tired to play');
   }
 }
-async function petFeed(e) { 
-  console.log('playing');
+function petFeed() {
+  let newOption;
+  let itemData;
+  feedSelectMenu.replaceChildren();
+  newOption = document.createElement('option');
+  newOption.textContent = 'Select food...';
+  newOption.value = 'default';
+  feedSelectMenu.appendChild(newOption);
+  for (const item of Object.keys(payload.owned)) {
+    itemData = payload.info[item];
+    if (itemData.type === 1) {
+      newOption = document.createElement('option');
+      newOption.textContent = itemData.name;
+      feedSelectMenu.appendChild(newOption);
+    }
+  }
+  feedDialog.showModal();
+}
+async function sendFeedRequest(e) {
   const response = await fetch('http://localhost:8080/api/' + apiPath + '/feed', {
     method: 'POST',
+    body: { item: confirmFeed.value },
   });
   if (response.ok) {
     await updateMeters();
   } else {
-    console.log('pet too tired to play');
+    console.log(response.statusText);
   }
 }
 
@@ -60,10 +83,18 @@ async function main() {
   await updateMeters();
   playButton.addEventListener('click', petPlay);
   feedButton.addEventListener('click', petFeed);
+  feedSelectMenu.addEventListener('change', () => {
+    confirmFeed.value = feedSelectMenu.value;
+    console.log(feedSelectMenu);
+  });
+  feedDialog.addEventListener('close', sendFeedRequest);
   const shopLink = document.createElement('a');
+  const itemRes = await fetch('http://localhost:8080/api/' + accountId + '/items', {
+    method: 'GET',
+  });
+  payload = await itemRes.json();
   shopLink.href = 'http://localhost:8080/' + 'shop' + window.location.pathname.slice(5, 24);
   shopLink.textContent = 'Go to the shop!';
   linkContainer.appendChild(shopLink);
-  console.log(shopLink);
 }
 window.addEventListener('load', main);

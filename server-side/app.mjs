@@ -1,4 +1,5 @@
 import express from 'express';
+import { read } from 'fs';
 import fs from 'fs/promises';
 import path from 'path';
 import { dirname } from 'path';
@@ -17,6 +18,7 @@ const HAPPINESS_DECAY = 3000;
 const ALLOWED_PLAYS_PER_SESSION = 3;
 const PLAY_COOLDOWN_HOURS = 1 / 360;
 const FEED_COOLDOWN_HOURS = 3;
+const CLEAN_COOLDOWN_HOURS = 1;
 const ITEMS = { soap: { name: 'Soap', cost: 20, type: 0, value: 25 }, supersoap: { name: 'Super Soap', cost: 40, type: 0, value: 50 }, ultrasoap: { name: 'Ultra Soap', cost: 70, type: 0, value: 100 }, donut: { cost: 30, name: 'Donut', type: 1, value: 25 }, superdonut: { cost: 50, name: 'Super Donut', type: 1, value: 50 }, ultradonut: { cost: 90, name: 'Ultra Donut', type: 1, value: 75 } };
 async function readAccountJson(accountId = null) {
   const accountsData = await fs.readFile('server-side/pets.json');
@@ -97,6 +99,18 @@ async function updatePets(accountId) {
   }
   return pets;
 }
+async function getAccountItems(req, res) {
+  const account = await readAccountJson(req.params.accountId);
+  if (account === undefined) {
+    res.status(404).end('Account not found.');
+  } else {
+    console.log(account);
+    res.json({
+      owned: account.items,
+      info: ITEMS,
+    });
+  }
+}
 function showAllPets(req, res) {
   updatePets(req.params.accountId);
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/pets/index.html'));
@@ -148,6 +162,10 @@ async function petPlay(req, res) {
   const now = Date.now();
   const accounts = await readAccountJson();
   const account = accounts[req.params.accountId];
+  if (account === undefined) {
+    res.status(404).end('Account not found,');
+    return;
+  }
   const lastPlayed = now - account.pets[req.params.petName].last_play_update;
   const playCount = account.pets[req.params.petName].playCount;
   console.log(` lastPlayed: ${lastPlayed} cooldown: ${hour * PLAY_COOLDOWN_HOURS}`);
@@ -155,6 +173,10 @@ async function petPlay(req, res) {
     if (lastPlayed >= hour * PLAY_COOLDOWN_HOURS) { account.pets[req.params.petName].playCount = 0; }
     if (account.pets[req.params.petName].playCount >= ALLOWED_PLAYS_PER_SESSION) {
       res.status(403).end(`Exceeded plays per ${PLAY_COOLDOWN_HOURS} hour(s) `);
+      return;
+    }
+    if (account.pets[req.params.petName].happiness + 20 > 100) {
+      res.status(403).end('Pet is max happiness.');
       return;
     }
     account.pets[req.params.petName].happiness += 20;
@@ -168,19 +190,63 @@ async function petPlay(req, res) {
 }
 async function petFeed(req, res) {
   const now = Date.now();
-  const account = await readAccountJson(req.params.accountId);
+  const foodId = req.body.foodId;
+  const foodItem = ITEMS[foodId];
+  if (foodItem === undefined || foodItem?.type !== 'feeding') {
+    res.status(403).end('Invalid item.');
+    return;
+  }
+  const accounts = await readAccountJson();
+  const account = accounts[req.params.accountId];
+  if (account === undefined) {
+    res.status(404).end('Could not find account.');
+    return;
+  }
+  if (account.items[foodId] === undefined || account.items[foodId] <= 0) {
+    res.status(403).send('Item is not owned by the account');
+    return;
+  }
+
   const lastFed = now - account.pets[req.params.petName].last_feed_update;
   if (lastFed > hour * FEED_COOLDOWN_HOURS) {
     account.pets[req.params.petName].last_feed_update = Date.now();
-    account.pets[req.params.petName].hunger += 20;
+    account.pets[req.params.petName].hunger += foodItem.value;
+    account.items[foodId] -= 1;
     await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
     res.status(200).end('Hunger stat increased');
   } else {
     res.status(403).end('Pet refusing to eat');
   }
 }
-async function petClean(req, res){
+async function petClean(req, res) {
+  const now = Date.now();
+  const cleanId = req.body.cleanId;
+  const cleanItem = ITEMS[cleanId];
+  if (cleanItem === undefined || cleanItem?.type !== 'feeding') {
+    res.status(403).end('Invalid item.');
+    return;
+  }
+  const accounts = await readAccountJson();
+  const account = accounts[req.params.accountId];
+  if (account === undefined) {
+    res.status(404).end('Could not find account.');
+    return;
+  }
+  if (account.items[cleanId] === undefined || account.items[cleanId] <= 0) {
+    res.status(403).send('Item is not owned by the account');
+    return;
+  }
 
+  const lastFed = now - account.pets[req.params.petName].last_feed_update;
+  if (lastFed > hour * CLEAN_COOLDOWN_HOURS) {
+    account.pets[req.params.petName].last_clean_update = Date.now();
+    account.pets[req.params.petName].cleanliness += cleanItem.value;
+    account.items[cleanId] -= 1;
+    await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
+    res.status(200).end('Hunger stat increased');
+  } else {
+    res.status(403).end('Pet refusing to eat');
+  }
 }
 
 async function purchaseItem(req, res) {
@@ -229,6 +295,7 @@ app.post('/api/:accountId/:petName/clean', petClean);
 app.get('/pets', showAllPets);
 app.get('/pets/:accountId/:petName', showSpecificPet);
 app.get('/api/:accountId', getAllAccountJson);
+app.get('/api/:accountId/items', getAccountItems);
 app.get('/api/:accountId/:petName', getPetJson);
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
