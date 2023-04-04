@@ -17,6 +17,7 @@
     <button id="clean">Clean</button>
     <button id="play">Play</button>
     <div id="linkcontainer"></div>
+
     <dialog id="feeddialog">
         <form method="dialog">
             <label>What item would you like to feed to your pet?
@@ -29,16 +30,18 @@
         </form>
     </dialog>
 
-
-    <form method="dialog">
-        <dialog id="cleandialog">
+    <dialog id="cleandialog">
+        <form method="dialog"></form>
             <label>What item would you like to feed to your pet?
                 <select id="cleanselect"></select>
             </label>
-            <button id="diaclean">Feed It!</button>
-            <button value="cancel">Not now.</button>
-        </dialog>
-    </form>
+            <section>
+                <button id="confirmclean" value="default">Clean It!</button>
+                <button value="cancel">Not now.</button>
+            </section>
+        </form>
+    </dialog>
+    
     
     
 </body>

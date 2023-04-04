@@ -17,7 +17,7 @@ const CLEANLINESS_DECAY = 5;
 const HAPPINESS_DECAY = 3000;
 const ALLOWED_PLAYS_PER_SESSION = 3;
 const PLAY_COOLDOWN_HOURS = 1 / 360;
-const FEED_COOLDOWN_HOURS = 3;
+const FEED_COOLDOWN_HOURS = 1 / 360;
 const CLEAN_COOLDOWN_HOURS = 1;
 const ITEMS = { soap: { name: 'Soap', cost: 20, type: 0, value: 25 }, supersoap: { name: 'Super Soap', cost: 40, type: 0, value: 50 }, ultrasoap: { name: 'Ultra Soap', cost: 70, type: 0, value: 100 }, donut: { cost: 30, name: 'Donut', type: 1, value: 25 }, superdonut: { cost: 50, name: 'Super Donut', type: 1, value: 50 }, ultradonut: { cost: 90, name: 'Ultra Donut', type: 1, value: 75 } };
 async function readAccountJson(accountId = null) {
@@ -30,12 +30,9 @@ async function readAccountJson(accountId = null) {
   }
 }
 async function createPet(req, res) {
-  console.log('Creating pet');
   const data = await fs.readFile('server-side/pets.json');
   const accounts = JSON.parse(data);
-  console.log(accounts);
   let pets = accounts[req.body.id]?.pets;
-  console.log(pets);
   if (pets === undefined) {
     accounts[req.body.id] = {
       NP: 100,
@@ -64,7 +61,6 @@ async function createPet(req, res) {
       dead: false,
     };
     await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
-    console.log('Created new pet!');
   } else {
     res.send('A pet already exists with that name!');
   }
@@ -83,9 +79,6 @@ async function updatePets(accountId) {
     value.cleanliness = value.cleanliness < 0 ? 0 : value.cleanliness;
     value.happiness = value.happiness < 0 ? 0 : value.happiness;
     now = Date.now();
-    value.last_feed_update = now;
-    value.last_play_update = now;
-    value.last_clean_update = now;
     value.last_updated = now;
     if (value.hunger <= 0) {
       value.dead = true;
@@ -104,7 +97,6 @@ async function getAccountItems(req, res) {
   if (account === undefined) {
     res.status(404).end('Account not found.');
   } else {
-    console.log(account);
     res.json({
       owned: account.items,
       info: ITEMS,
@@ -143,7 +135,6 @@ async function getAllAccountJson(req, res) {
   res.set('Content-Type', 'application/json');
   const accountsData = await fs.readFile('server-side/pets.json');
   const accounts = JSON.parse(accountsData);
-  console.log(accounts);
   if (accounts[req.params.accountId] === undefined) {
     if (accounts[req.params.accountId] === undefined) {
       accounts[req.params.accountId] = {
@@ -151,7 +142,6 @@ async function getAllAccountJson(req, res) {
         pets: {},
         items: {},
       };
-      console.log(accounts);
       await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
     }
   }
@@ -190,9 +180,10 @@ async function petPlay(req, res) {
 }
 async function petFeed(req, res) {
   const now = Date.now();
-  const foodId = req.body.foodId;
+  console.log(req.body);
+  const foodId = req.body.item;
   const foodItem = ITEMS[foodId];
-  if (foodItem === undefined || foodItem?.type !== 'feeding') {
+  if (foodItem === undefined || foodItem?.type !== 1) {
     res.status(403).end('Invalid item.');
     return;
   }
@@ -208,6 +199,7 @@ async function petFeed(req, res) {
   }
 
   const lastFed = now - account.pets[req.params.petName].last_feed_update;
+  console.log(`Last fed: ${lastFed} cooldown ${hour * FEED_COOLDOWN_HOURS}`);
   if (lastFed > hour * FEED_COOLDOWN_HOURS) {
     account.pets[req.params.petName].last_feed_update = Date.now();
     account.pets[req.params.petName].hunger += foodItem.value;
