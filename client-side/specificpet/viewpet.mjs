@@ -1,5 +1,6 @@
 
 
+const fitnessMeter = document.querySelector('#fitness');
 const happinessMeter = document.querySelector('#happiness');
 const cleanMeter = document.querySelector('#cleanliness');
 const hungerMeter = document.querySelector('#hunger');
@@ -35,12 +36,13 @@ async function updateMeters() {
   }
   NPamount.textContent = `NP: ${petStats.NP}`;
   petNameTitle.textContent = petName;
-  happinessMeter.value = petStats.happiness;
+  fitnessMeter.value = petStats.fitness;
   hungerMeter.value = petStats.hunger;
   cleanMeter.value = petStats.cleanliness;
+  happinessMeter.value = (petStats.fitness + petStats.hunger + petStats.cleanliness) / 3;
 }
 
-async function petPlay(e) {
+async function petPlay() {
   console.log('playing');
   const response = await fetch('http://localhost:8080/api/' + apiPath + '/play', {
     method: 'POST',
@@ -92,7 +94,7 @@ function petClean() {
   cleanDialog.showModal();
 }
 async function sendCareRequest(confirm) {
-  const response = await fetch('http://localhost:8080/api/' + apiPath + (payload.info[confirm.value].type === 0 ? '/clean' : '/feed'), {
+  const response = await fetch('http://localhost:8080/api/' + apiPath + '/care', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ item: confirm.value }),
@@ -100,11 +102,12 @@ async function sendCareRequest(confirm) {
   if (response.ok) {
     await updateMeters();
   } else {
-    console.log(response.statusText);
+    console.log(await response.text());
   }
 }
 function handleSelections(confirm, selectMenu) {
   confirm.value = selectMenu.value;
+  console.log(confirmClean.value);
   confirm.disabled = confirm.value === 'default';
 }
 async function main() {

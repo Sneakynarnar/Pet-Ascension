@@ -12,7 +12,8 @@
     <div id="petcontainer"></div>
     <meter id="hunger" max="100" min="0">Hunger</meter>
     <meter id="cleanliness" max="100" min="0">Cleanliness</meter>
-    <meter id="happiness" max="100" min="0">Happiness</meter>
+    <meter id="fitness" max="100" min="0">Fitness</meter>
+    <meter id="happiness" max="100" min="0">Hapiness</meter>
     <button id="feed">Feed</button>
     <button id="clean">Clean</button>
     <button id="play">Play</button>
@@ -31,18 +32,15 @@
     </dialog>
 
     <dialog id="cleandialog">
-        <form method="dialog"></form>
+        <form method="dialog">
             <label>What item would you like to feed to your pet?
                 <select id="cleanselect"></select>
             </label>
-            <section>
+            <div>
                 <button id="confirmclean" value="default">Clean It!</button>
                 <button value="cancel">Not now.</button>
-            </section>
+            </div>
         </form>
     </dialog>
-    
-    
-    
 </body>
 </html>
