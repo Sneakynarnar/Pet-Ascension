@@ -1,6 +1,5 @@
 /* eslint-disable no-restricted-syntax */
 import express from 'express';
-import fs from 'fs/promises';
 import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -21,17 +20,18 @@ const ITEMS = {
   superdonut: { cost: 50, name: 'Super Donut', type: 1, value: 50 },
   ultradonut: { cost: 90, name: 'Ultra Donut', type: 1, value: 75 },
 };
+const connect = PInt.init();
 async function createPetReq(req, res) {
-  const data = await fs.readFile('server-side/pets.json');
-  const accounts = JSON.parse(data);
-  const pets = accounts[req.body.id]?.pets;
-  if (pets === undefined) {
+  const db = await connect;
+  const account = PInt.readAccounts(req.body.id);
+  if (account === undefined) {
     res.status(404).send('Invalid account.');
   }
-  if (pets[req.body.name.toLowerCase()] === undefined) {
-    PInt.createPet(req.body.id, req.body.name, req.body.antype);
+  const pet = await db.get('SELECT * FROM Pets WHERE accountId = ?', [req.body.name]);
+  if (pet === undefined) {
+    PInt.createPet(req.body.id, req.body.name, req.body.animaltype);
   } else {
-    res.send('A pet already exists with that name!');
+    res.status(403).send('A pet already exists with that name!');
   }
 }
 async function getAccountItems(req, res) {
@@ -50,41 +50,54 @@ function showAllPets(req, res) {
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/pets/index.html'));
 }
 async function showSpecificPet(req, res) {
-  const account = await PInt.readAccounts(req.params.accountId);
   const petName = req.params.petName;
+  const pet = await PInt.getAccountPets(req.params.accountId, petName);
+  console.log(`Showing pet: ${JSON.stringify(pet)}`);
   await PInt.updatePets(req.params.accountId);
-  if (account?.pets[petName] === undefined) {
-    res.status(404).end(`Couldn't find this pet :( ${JSON.stringify(account)}`);
+  if (pet === undefined) {
+    res.status(404).end(`Couldn't find this pet :( ${JSON.stringify(pet)}`);
     return;
   }
   res.sendFile(path.resolve('client-side/specificpet/viewpet.html'));
 }
+function sacrificePetReq(req, res) {
+  const account = PInt.readAccounts(req.params.accountId);
+  const pet = PInt.getAccountPets(req.params.accountId, req.params.petName);
+  if (account === undefined || pet === undefined) {
+    res.status(404).send('Account / Pet not found');
+  }
+  const status = PInt.petSacrifice(req.params.accountId, req.params.petName);
+  if (!status) {
+    res.status(403).send('Cannot sacrifice pet!');
+  } else {
+    res.status(200).send('Pet sacrificed!');
+  }
+}
 async function getPetJson(req, res) {
   res.set('Content-Type', 'application/json');
-  const account = await PInt.readAccountJson(req.params.accountId);
-  const pets = await account.pets;
-  if (pets === undefined || pets[req.params.petName] === undefined) {
+  const db = await connect;
+  const pet = await PInt.getAccountPets(req.params.accountId, req.params.petName);
+  if (pet === undefined) {
     res.status(404).end('Not found');
     return;
   }
-  const pet = pets[req.params.petName];
-  pet.NP = account.NP;
+  const NP = await db.get('SELECT NP FROM Accounts WHERE accountId = ?', req.params.accountId);
+  pet.NP = NP.NP;
   res.json(pet);
 }
 async function getAllAccountJson(req, res) {
   res.set('Content-Type', 'application/json');
-  const accountsData = await fs.readFile('server-side/pets.json');
-  const accounts = JSON.parse(accountsData);
-  if (accounts[req.params.accountId] === undefined) {
-    if (accounts[req.params.accountId] === undefined) {
-      PInt.createAccount(req.params.accountId);
-    }
+  const accountId = req.params.accountId;
+  let account = await PInt.readAccounts(accountId);
+  if (account === undefined) {
+    account = PInt.createAccount(accountId);
   }
-  res.json(accounts[req.params.accountId]);
+  const pets = await PInt.getAccountPets(accountId);
+  account.pets = pets;
+  res.json(account);
 }
 async function petPlay(req, res) {
-  const accounts = await PInt.readAccounts();
-  const account = accounts[req.params.accountId];
+  const account = await PInt.readAccounts(req.params.accountId);
   if (account === undefined) {
     res.status(404).end('Account not found,');
     return;
@@ -92,7 +105,7 @@ async function petPlay(req, res) {
   PInt.petPlay(req.params.accountId, req.params.petName, res);
 }
 async function petCareReq(req, res) {
-  const thing = await PInt.petCare(req.body.item, req.params.accountId, req.params.petName, res);
+  await PInt.petCare(req.body.item, req.params.accountId, req.params.petName, res);
 }
 async function purchaseItemReq(req, res) {
   const item = ITEMS[req.params.item];
@@ -111,7 +124,7 @@ app.get('/pets/create', (req, res) => {
 app.get('/shop/:accountId/items', async (req, res) => {
   res.json({
     shop: ITEMS,
-    account: await PInt.readAccountJson(req.params.accountId),
+    account: await PInt.readAccounts(req.params.accountId),
   });
 });
 app.get('/shop/:accountId/', (req, res) => {
@@ -121,11 +134,13 @@ app.post('/shop/:accountId/:item', express.json(), purchaseItemReq);
 app.post('/pets/create', express.json(), createPetReq);
 app.post('/api/:accountId/:petName/play', petPlay);
 app.post('/api/:accountId/:petName/care', petCareReq);
+app.post('/pets/:accountId/:petName/sacrifice', sacrificePetReq);
 app.get('/pets', showAllPets);
 app.get('/pets/:accountId/:petName', showSpecificPet);
 app.get('/api/:accountId', getAllAccountJson);
 app.get('/api/:accountId/items', getAccountItems);
 app.get('/api/:accountId/:petName', getPetJson);
+
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });

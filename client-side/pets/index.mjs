@@ -4,13 +4,14 @@ async function getJson(id) {
   console.log('in getJson');
   const response = await fetch(`http://localhost:8080/api/${id}`);
   const pets = await response.json();
-  console.log(response);
-  return pets.pets;
+  console.log(pets);
+  return pets;
 }
 async function loadPets(id) {
   console.log('im here');
   const petList = document.querySelector('#petlist');
-  const pets = await getJson(id);
+  const account = await getJson(id);
+  const pets = account.pets;
   let listNode;
   let link;
   console.log(pets);
@@ -23,11 +24,11 @@ async function loadPets(id) {
     // link.textContent = 'Click here';
     noPets.innerHTML = `It seems like you haven't creates any pets <a href="http://localhost:8080/pets/create/#token_type=${authType}&access_token=${accessToken}">Click here!</a> to create your pet`;
   }
-  for (const [name, attr] of Object.entries(pets)) {
+  for (const attr of Object.values(pets)) {
     listNode = document.createElement('li');
     link = document.createElement('a');
-    link.href = `http://localhost:8080/pets/${id}/${name.toLowerCase()}`;
-    link.textContent = name;
+    link.href = `http://localhost:8080/pets/${id}/${attr.petName.toLowerCase()}`;
+    link.textContent = attr.petName;
     listNode.append(link);
     petList.append(listNode);
   }
@@ -46,7 +47,7 @@ async function main() {
 
   });
   const data = await response.json();
-  console.log(data);
+  console.log(data.id);
   await loadPets(data.id);
 }
 

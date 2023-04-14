@@ -1,14 +1,16 @@
 /* eslint-disable no-restricted-syntax */
-import sqlite3 from 'sqlite'
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 import fs from 'fs/promises';
 const hour = 1000 * 3600;
 const HUNGER_DECAY = 2500;
 const CLEANLINESS_DECAY = 2000;
-const BASE_NP_RATE = 10;
+const BASE_NP_RATE = 10000;
 const BASE_LEVEL_BOOST = 10;
 const FITNESS_DECAY = 3000;
+const MIN_SACRIFICE_LEVEL = 15;
 const ALLOWED_PLAYS_PER_SESSION = 3;
-const PLAY_BASE_XP = 250;
+const PLAY_BASE_XP = 10000;
 const PLAY_COOLDOWN_HOURS = 1 / 360;
 const FEED_COOLDOWN_HOURS = 1 / 360;
 const CLEAN_COOLDOWN_HOURS = 1 / 360;
@@ -24,20 +26,23 @@ const ITEMS = {
   ultradonut: { cost: 90, name: 'Ultra Donut', type: 1, value: 75 },
 };
 
-async function init() {
-  const db = await sqlite3.open('./database.sqlite', { verbose: true });
-  await db.migrate({ migrationsPath: './migrations-sqlite' });
+export async function init() {
+  const db = await open({
+    filename: './database.sqlite',
+    driver: sqlite3.Database,
+    verbose: true,
+  });
   return db;
 }
 
 const connect = init();
-/* eslint-disable no-restricted-syntax */
 
 export async function purchaseItem(accountId, itemName, res) {
-  const accounts = await readAccountJson();
-  const account = accounts[accountId];
+  const db = await connect;
+  const account = await readAccounts(accountId);
   const item = ITEMS[itemName];
-  if (account.NP > item.cost) {
+  account.items = JSON.parse(account.items);
+  if (account.NP >= item.cost) {
     account.NP -= item.cost;
     if (account.items[itemName] !== undefined) {
       account.items[itemName] += 1;
@@ -48,94 +53,113 @@ export async function purchaseItem(accountId, itemName, res) {
     res.status(403).end('Not enough NP');
     return;
   }
+  await db.run('UPDATE Accounts SET NP = ?, items = ? WHERE accountId = ?', [account.NP, JSON.stringify(account.items), accountId]);
   res.json(account);
-  await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
 }
 export async function createPet(accountId, petName, type) {
   const defaultLastInteract = Date.now() - 36000000; // Last interact by default is set to 5 hours ago
   const now = Date.now();
-  const accounts = await readAccounts();
-  accounts[accountId].pets[petName] = {
-    dateCreated: now,
-    type,
-    cleanliness: 100,
-    happiness: 100,
-    hunger: 100,
-    level: 1,
-    XP: 0,
-    rank: 1,
-    last_feed_update: defaultLastInteract,
-    last_play_update: defaultLastInteract,
-    playCount: 0,
-    last_clean_update: defaultLastInteract,
-    last_updated: now,
-    dead: false,
-  };
-  await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
+  const db = await connect;
+  const duplicates = await db.get('SELECT * FROM Pets WHERE accountId = ? AND petName = ?', [accountId, petName])
+  if (duplicates !== undefined) {
+    console.log(`Pet already exists: ${duplicates}`);
+    return false;
+  }
+  await db.run('INSERT INTO Pets VALUES (:accountId, :petName, :dateCreated, :type, :cleanliness, :happiness, :hunger, :level, :XP, :rank, :last_updated, :last_feed_update, :last_play_update, :last_clean_update, :playCount, :dead)', {
+    ':accountId': accountId,
+    ':petName': petName,
+    ':dateCreated': now,
+    ':type': type,
+    ':cleanliness': 100,
+    ':happiness': 100,
+    ':hunger': 100,
+    ':level': 1,
+    ':XP': 0,
+    ':rank': 1,
+    ':last_feed_update': defaultLastInteract,
+    ':last_play_update': defaultLastInteract,
+    ':last_clean_update': defaultLastInteract,
+    ':playCount': 0,
+    ':last_updated': now,
+    ':dead': false,
+  });
 }
 export async function readAccounts(accountId = null) {
   const db = await connect;
-  const accounts = accountId === null ? db.all('SELECT * FROM Accounts') : db.get('SELECT * FROM Accounts WHERE id = ?', accountId);
+  console.log(accountId);
+  const accounts = accountId === null ? await db.all('SELECT * FROM Accounts') : await db.get('SELECT * FROM Accounts WHERE accountId  = ?', accountId);
   console.log(accounts);
+
   return accounts;
 }
 export async function createAccount(accountId) {
   const db = await connect;
-  db.run('INSERT INTO Accounts VALUES (?,?,?)', [accountId, 0, '{}']);
-  return [accountId, 0, '{}'];
+  console.log(`Creating account with ID ${accountId}`);
+  const account = await db.get('SELECT * FROM Accounts WHERE accountId = ?', accountId);
+  if (account !== undefined) {
+    console.log(accountId);
+    return false;
+  }
+  db.run('INSERT INTO Accounts VALUES (?,?,?)', [accountId, 100, '{}']);
+  return [accountId, 100, '{}'];
 }
-export function calculateNP(happiness, level, rank) {
-  return Math.round((BASE_NP_RATE * (1 + (happiness / 100)) * (1 + ((level * BASE_LEVEL_BOOST) / 100))) * rank);
+export function calculateNP(happiness, level, rank, time) {
+  const perHour = (BASE_NP_RATE * (1 + (happiness / 100)) * (1 + ((level * BASE_LEVEL_BOOST) / 100))) * rank;
+
+  const earned = perHour * (time / hour);
+  console.log(earned);
+  return Math.round(earned);
 }
 export async function handleXPGain(XP, accountId, petName) {
-  const accounts = await readAccounts();
-  const account = accounts[accountId];
-  const pets = account.pets;
-  pets[petName].XP += XP;
-  while (pets[petName].XP >= XP_PER_LEVEL) {
-    pets[petName] -= XP_PER_LEVEL;
-    pets[petName].level += 1;
+  const db = await connect;
+  const pets = await getAccountPets(accountId, petName);
+  pets.XP += XP;
+  while (pets.XP >= XP_PER_LEVEL) {
+    pets.XP -= XP_PER_LEVEL;
+    pets.level += 1;
   }
-  await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
+  db.run('UPDATE Pets SET XP = ?, level = ?', pets.XP, pets.level);
+}
+export async function getAccountPets(accountId, petName = null) {
+  const db = await connect;
+  const pets = petName === null ? await db.all('SELECT * FROM Pets WHERE accountId = ? ', accountId) : db.get('SELECT * FROM Pets WHERE accountId = ? AND petName = ?', [accountId, petName]);
+  return pets;
 }
 export async function updatePets(accountId) {
-  const petsData = await fs.readFile('server-side/pets.json');
-  const accounts = JSON.parse(petsData);
-  if (accounts[accountId] === undefined) { return null; }
-  const pets = accounts[accountId].pets;
+  const db = await connect;
+  const pets = await getAccountPets(accountId);
+  const account = await readAccounts(accountId);
+  if (pets === undefined) { return null; }
   let now = Date.now();
   let totalNpEarned = 0;
-  for (const [pet, value] of Object.entries(pets)) {
-    value.hunger -= Math.round(((now - value.last_feed_update) / hour) * HUNGER_DECAY);
-    value.fitness -= Math.round(((now - value.last_play_update) / hour) * FITNESS_DECAY);
-    value.cleanliness -= Math.round(((now - value.last_clean_update) / hour) * CLEANLINESS_DECAY);
-    value.hunger = value.hunger < 0 ? 0 : value.hunger;
-    value.cleanliness = value.cleanliness < 0 ? 0 : value.cleanliness;
-    value.fitness = value.fitness < 0 ? 0 : value.fitness;
-    value.happiness = (value.hunger + value.fitness + value.cleanliness) / 3;
-    totalNpEarned += calculateNP(value.happiness, value.level, value.rank);
+  for (const pet of pets) {
+    pet.hunger -= Math.round(((now - pet.last_feed_update) / hour) * HUNGER_DECAY);
+    pet.fitness -= Math.round(((now - pet.last_play_update) / hour) * FITNESS_DECAY);
+    pet.cleanliness -= Math.round(((now - pet.last_clean_update) / hour) * CLEANLINESS_DECAY);
+    pet.hunger = pet.hunger < 0 ? 0 : pet.hunger;
+    pet.cleanliness = pet.cleanliness < 0 ? 0 : pet.cleanliness;
+    pet.fitness = pet.fitness < 0 ? 0 : pet.fitness;
+    pet.happiness = (pet.hunger + pet.fitness + pet.cleanliness) / 3;
+    totalNpEarned += calculateNP(pet.happiness, pet.level, pet.rank, now - pet.last_updated);
     now = Date.now();
-    value.last_updated = now;
-    if (value.hunger <= 0) {
-      value.dead = true;
+    pet.last_updated = now;
+    if (pet.hunger <= 0) {
+      pet.dead = true;
     }
-    pets[pet] = value;
+    db.run('UPDATE Pets SET hunger = ?, fitness = ?, cleanliness = ?, last_updated = ? WHERE accountId = ? AND petName = ?', pet.hunger, pet.fitness, pet.cleanliness, pet.last_updated, accountId, pet.petName);
   }
-  accounts[accountId].NP += totalNpEarned;
-
-  try {
-    await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
-  } catch (error) {
-    return error;
-  }
-  return pets;
+  account.NP += totalNpEarned;
+  db.run('UPDATE Accounts SET NP = ? WHERE accountId = ?', account.NP, accountId);
+  return [pets, account.NP];
 }
 
 export async function petCare(itemId, accountId, petName, res) {
   const now = Date.now();
+  const db = await connect;
   const item = ITEMS[itemId];
-  const accounts = await readAccounts();
-  const account = accounts[accountId];
+  const account = await readAccounts(accountId);
+  account.items = JSON.parse(account.items);
+  const pet = await getAccountPets(accountId, petName);
   if (item === undefined) {
     res.status(404).send('Cannot find Item.');
     return;
@@ -145,11 +169,11 @@ export async function petCare(itemId, accountId, petName, res) {
   let XP;
   if (item.type === 0) {
     cooldown = CLEAN_COOLDOWN_HOURS;
-    lastInteract = now - account.pets[petName].last_clean_update;
+    lastInteract = now - pet.last_clean_update;
     XP = CLEAN_XP;
   } else {
     cooldown = FEED_COOLDOWN_HOURS;
-    lastInteract = now - account.pets[petName].last_clean_update;
+    lastInteract = now - pet.last_clean_update;
     XP = FEED_XP;
   }
 
@@ -165,42 +189,61 @@ export async function petCare(itemId, accountId, petName, res) {
   console.log(cooldown * hour);
   if (lastInteract > hour * cooldown) {
     if (item.type === 0) {
-      account.pets[petName].last_clean_update = Date.now();
-      account.pets[petName].cleanliness += item.value;
+      pet.last_clean_update = Date.now();
+      pet.cleanliness += item.value;
+      db.run('UPDATE Pets SET last_clean_update = ?, cleanliness = ? WHERE accountId = ? ', pet.last_clean_update, pet.cleanliness, accountId);
     } else {
-      account.pets[petName].last_feed_update = Date.now();
-      account.pets[petName].hunger += item.value;
+      pet.last_feed_update = Date.now();
+      pet.hunger += item.value;
+      db.run('UPDATE Pets SET last_feed_update = ?, hunger = ? WHERE accountId = ?', pet.last_feed_update, pet.hunger, accountId);
     }
-    handleXPGain(XP, account, petName);
+    handleXPGain(XP, accountId, petName);
     account.items[itemId] -= 1;
-    await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
+    db.run('UPDATE Accounts SET items = ? WHERE accountId = ?', [JSON.stringify(account.items), accountId]);
     res.status(200).send('Stat increased!');
   } else {
-    res.status(403, 'Pet refusing to eat');
+    res.status(403, 'Pet refusing to interact');
   }
 }
 export async function petPlay(accountId, petName, res) {
+  const db = await connect;
   const now = Date.now();
-  const accounts = await readAccounts();
-  const account = accounts[accountId];
-  const lastPlayed = now - account.pets[petName].last_play_update;
-  const playCount = account.pets[petName].playCount;
+  const pet = await getAccountPets(accountId, petName);
+  console.log(`Playing with pet: ${JSON.stringify(pet)}`);
+  const lastPlayed = now - pet.last_play_update;
+  const playCount = pet.playCount;
   console.log(` lastPlayed: ${lastPlayed / 1000 * 60}  seconds ago cooldown: ${PLAY_COOLDOWN_HOURS / 1000 * 60}`);
   if (lastPlayed > hour * PLAY_COOLDOWN_HOURS || playCount <= ALLOWED_PLAYS_PER_SESSION) {
-    if (lastPlayed >= hour * PLAY_COOLDOWN_HOURS) { account.pets[petName].playCount = 0; }
-    if (account.pets[petName].playCount >= ALLOWED_PLAYS_PER_SESSION) {
+    if (lastPlayed >= hour * PLAY_COOLDOWN_HOURS) { pet.playCount = 0; }
+    if (pet.playCount >= ALLOWED_PLAYS_PER_SESSION) {
       res.status(403).end(`Exceeded plays per ${PLAY_COOLDOWN_HOURS} hour(s) `);
       return;
     }
-    if (account.pets[petName].fitness + 20 > 100) {
+    if (pet.fitness + 20 > 100) {
       res.status(403).end('Pet is max fitness.');
       return;
     }
-    account.pets[petName].fitness += 20;
-    account.pets[petName].playCount++;
-    account.pets[petName].last_play_update = now;
+    pet.fitness += 20;
+    pet.playCount++;
+    pet.last_play_update = now;
     handleXPGain(PLAY_BASE_XP, accountId, petName);
-    await fs.writeFile('server-side/pets.json', JSON.stringify(accounts));
+    db.run('UPDATE Pets SET playCount = ?, fitness = ?, last_play_update = ?', pet.playCount, pet.fitness, pet.last_play_update);
     res.status(200).end('Fitness increased');
   }
+}
+export async function petSacrifice(accountId, petName) {
+  const db = await connect;
+  const pet = await getAccountPets(accountId, petName);
+  if (pet.level <= MIN_SACRIFICE_LEVEL || pet.dead || pet.rank === 2) {
+    return false;
+  }
+  const qry = await db.get('SELECT items FROM Accounts WHERE accountId = ?', accountId);
+  const items = JSON.parse(qry.items);
+  if (items.pet_blood === undefined) {
+    items.pet_blood = 1;
+  } else {
+    items.pet_blood += 1;
+  }
+  await db.run('UPDATE Accounts SET items = ? WHERE accountId = ?', JSON.stringify(items), accountId);
+  await db.run('UPDATE Pets SET dead = ?', true);
 }

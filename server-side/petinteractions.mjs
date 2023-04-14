@@ -24,7 +24,7 @@ const ITEMS = {
   ultradonut: { cost: 90, name: 'Ultra Donut', type: 1, value: 75 },
 };
 export async function purchaseItem(accountId, itemName, res) {
-  const accounts = await readAccountJson();
+  const accounts = await readAccounts();
   const account = accounts[accountId];
   const item = ITEMS[itemName];
   if (account.NP > item.cost) {
@@ -44,7 +44,7 @@ export async function purchaseItem(accountId, itemName, res) {
 export async function createPet(accountId, petName, type) {
   const defaultLastInteract = Date.now() - 36000000; // Last interact by default is set to 5 hours ago
   const now = Date.now();
-  const accounts = await readAccountJson();
+  const accounts = await readAccounts();
   accounts[accountId].pets[petName] = {
     dateCreated: now,
     type,
