@@ -3,13 +3,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/specificpet/viewpet.css">
     <script type=module defer src='/specificpet/viewpet.mjs'></script>
     <title id="title"></title>
 </head>
 <body>
     <h1 id="petname"></h1>
     <p id="NP"></p>
-    <div id="petcontainer"></div>
+    <section id="petcontainer"></section>
     <meter id="hunger" max="100" min="0">Hunger</meter>
     <meter id="cleanliness" max="100" min="0">Cleanliness</meter>
     <meter id="fitness" max="100" min="0">Fitness</meter>
@@ -20,17 +21,17 @@
     <button id="sacrifice" disabled='true'>SACRIFICE!!!</button>
     <p id="level"></p>
     <p id="exp"></p>
-    <div id="linkcontainer"></div>
+    <section id="linkcontainer"></section>
 
     <dialog id="feeddialog">
         <form method="dialog">
             <label>What item would you like to feed to your pet?
                 <select id="feedselect"></select>
             </label>
-            <div>
+            <section>
                 <button id="confirmfeed" value="default">Feed It!</button>
                 <button value="cancel">Not now.</button>
-            </div>
+            </section>
         </form>
     </dialog>
 
@@ -39,14 +40,14 @@
             <label>What item would you like to feed to your pet?
                 <select id="cleanselect"></select>
             </label>
-            <div>
+            <section>
                 <button id="confirmclean" value="default">Clean It!</button>
                 <button value="cancel">Not now.</button>
-            </div>
+            </section>
         </form>
     </dialog>
     <dialog id="gamedialog">
-        <p id="score"></p>
+        <p id="score">TESTINGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG</p>
         <div id="game"></div>
     </dialog>
 </body>

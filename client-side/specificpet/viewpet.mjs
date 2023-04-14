@@ -18,12 +18,14 @@ const cleanDialog = document.querySelector('#cleandialog');
 const cleanSelectMenu = document.querySelector('#cleanselect');
 const XPcounter = document.querySelector('#exp');
 const sacrifice = document.querySelector('#sacrifice');
+const gameDialog = document.querySelector('#gamedialog');
+const game = document.querySelector('#game');
 const level = document.querySelector('#level');
 const levelIndicator = document.querySelector('#score');
 // variables
-const playCom = [];
-const combination = [];
-let level = 1;
+let playCom = [];
+let combination = [];
+let gamelevel = 1;
 let playing = false;
 
 const petName = window.location.pathname.slice(25);
@@ -64,16 +66,22 @@ async function updateMeters() {
   happinessMeter.value = (petStats.fitness + petStats.hunger + petStats.cleanliness) / 3;
 }
 
-async function petPlay() {
+async function petPlay(boost) {
   console.log('playing');
   const response = await fetch('http://localhost:8080/api/' + apiPath + '/play', {
     method: 'POST',
+    body: { boost },
   });
   if (response.ok) {
     await updateMeters();
   } else {
     console.log('pet too tired to play');
   }
+}
+function startGame() {
+  gameDialog.showModal();
+  console.log('starting memory game');
+  nextLevel(gamelevel);
 }
 function petFeed() {
   let newOption;
@@ -147,18 +155,36 @@ function handleSelections(confirm, selectMenu) {
   console.log(confirmClean.value);
   confirm.disabled = confirm.value === 'default';
 }
+
+// memory game
 function setupMemoryGame() {
-  const game = document.querySelector('#game');
   for (let i = 1; i <= 9; i++) {
     const div = document.createElement('div');
     div.id = 'space' + i;
-    game.addEventListener('click', clickHandler);
+    div.classList.add('memoryspace');
     game.append(div);
   }
-
+  game.addEventListener('click', memoryGameClickHandler);
 }
-function memoryGameClickHandler() {
-  
+async function endGame() {
+  game.classList.remove('right', 'wrong');
+  gamelevel = 1;
+  gameDialog.close();
+  await petPlay(level);
+}
+function rightAnswer() {
+  game.classList.add('right');
+  setInterval(() => {
+    game.classList.remove('right');
+  }
+  , 1000);
+  playing = true;
+  nextLevel(++gamelevel);
+  const levelIndicator = document.querySelector('#score');
+  levelIndicator.textContent = 'Level: ' + level;
+  playCom = [];
+}
+async function memoryGameClickHandler(e) {
   if (!playing) {
     e.target.style = 'background-color: red';
     setTimeout(() => { e.target.style = 'background-color: lime'; }, 100);
@@ -167,9 +193,8 @@ function memoryGameClickHandler() {
       if (combination[i] !== playCom[i]) {
         combination = [];
         playCom = [];
-        levelIndicator.textContent = 'Level: 1';
-        wrongAnswer();
-        break;
+        await endGame();
+        return;
       }
     }
     if (playCom.toString() === combination.toString()) {
@@ -177,9 +202,36 @@ function memoryGameClickHandler() {
     }
   }
 }
+function nextLevel(lvl) {
+  let counter = 0;
+  let spaceElement;
+  function nextSpace() {
+    const space = Math.floor(Math.random() * 9) + 1;
+
+    combination.push(space);
+  }
+
+  function playSequence() {
+    console.log(combination);
+    const space = combination[counter];
+    console.log(space);
+    spaceElement = document.querySelector('#space' + space);
+    spaceElement.style = 'background-color: red';
+    setTimeout(() => { spaceElement.style = 'background-color: lime'; }, 500);
+    counter++;
+    if (counter === lvl) {
+      clearInterval(intId);
+      setTimeout(() => { playing = false; }, 1000);
+      counter = 0;
+    }
+  }
+
+  nextSpace();
+  const intId = setInterval(playSequence, 1000);
+}
 async function main() {
   await updateMeters();
-  playButton.addEventListener('click', petPlay);
+  playButton.addEventListener('click', startGame);
   feedButton.addEventListener('click', petFeed);
   cleanButton.addEventListener('click', petClean);
   sacrifice.addEventListener('click', sacrificePet);
@@ -187,6 +239,7 @@ async function main() {
   feedSelectMenu.addEventListener('change', () => { handleSelections(confirmFeed, feedSelectMenu); });
   feedDialog.addEventListener('close', () => { sendCareRequest(confirmFeed); });
   cleanDialog.addEventListener('close', () => { sendCareRequest(confirmClean); });
+  setupMemoryGame();
   const shopLink = document.createElement('a');
   const itemRes = await fetch('http://localhost:8080/api/' + accountId + '/items', {
     method: 'GET',

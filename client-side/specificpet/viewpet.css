@@ -1,0 +1,17 @@
+div {
+  display: grid;
+  background-color: lime;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: minmax(100px, auto);   
+  border: solid red 1px
+}
+
+.wrong {
+
+  border-color: red;
+  border-width: 0.5em;
+}
+.right {
+  border-color: green;
+  border-width: 0.5em;  
+}
