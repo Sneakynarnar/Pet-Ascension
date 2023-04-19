@@ -8,6 +8,7 @@ const CLEANLINESS_DECAY = 2000;
 const BASE_NP_RATE = 10000;
 const BASE_LEVEL_BOOST = 10;
 const FITNESS_DECAY = 3000;
+const BASE_HAPPINESS_POINTS = 20;
 const MIN_SACRIFICE_LEVEL = 15;
 const ALLOWED_PLAYS_PER_SESSION = 3;
 const PLAY_BASE_XP = 10000;
@@ -205,7 +206,7 @@ export async function petCare(itemId, accountId, petName, res) {
     res.status(403, 'Pet refusing to interact');
   }
 }
-export async function petPlay(accountId, petName, res) {
+export async function petPlay(accountId, petName, boost, res) {
   const db = await connect;
   const now = Date.now();
   const pet = await getAccountPets(accountId, petName);
@@ -219,11 +220,14 @@ export async function petPlay(accountId, petName, res) {
       res.status(403).end(`Exceeded plays per ${PLAY_COOLDOWN_HOURS} hour(s) `);
       return;
     }
-    if (pet.fitness + 20 > 100) {
+    if (pet.fitness + BASE_HAPPINESS_POINTS > 100) {
       res.status(403).end('Pet is max fitness.');
       return;
     }
-    pet.fitness += 20;
+    console.log(`boost was initially ${boost}`);
+    boost = boost >= 10 ? 10 : boost;
+    pet.fitness += BASE_HAPPINESS_POINTS * (1 + (boost / 10));
+    console.log(`Boost is ${(1 + (boost / 10))} so as per the ${BASE_HAPPINESS_POINTS} base happiness has been increased by ${BASE_HAPPINESS_POINTS * (1 + boost / 10)}`);
     pet.playCount++;
     pet.last_play_update = now;
     handleXPGain(PLAY_BASE_XP, accountId, petName);

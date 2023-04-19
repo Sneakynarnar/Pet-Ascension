@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" href="/specificpet/viewpet.css" type="text/css"/>
+  <svg xmlns="http://www.w3.org/2000/svg">
+    <rect x='30' y='0' rx='6' ry='6' width='50' height='80' style="fill: white; stroke: black; stroke-width: 4"/>
+    <text id='cardnumber' x="44" y="53" style="font-size: 3em">9</text>
+  </svg>

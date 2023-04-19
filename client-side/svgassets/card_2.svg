@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" href="/specificpet/viewpet.css" type="text/css"/> 
+  <svg xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="Gradient1" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#b300ff" />
+      <stop offset="100%" stop-color="#1dc01d" />
+      </linearGradient>
+    </defs>
+    <rect x='30' y='0' rx='6' ry='6' width='50' height='80' fill='url(#Gradient1)' style = 'stroke: black; stroke-width: 4;'/>
+    
+  </svg>

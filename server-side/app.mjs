@@ -97,12 +97,14 @@ async function getAllAccountJson(req, res) {
   res.json(account);
 }
 async function petPlay(req, res) {
+  const boost = req.body.boost;
   const account = await PInt.readAccounts(req.params.accountId);
   if (account === undefined) {
     res.status(404).end('Account not found,');
     return;
   }
-  PInt.petPlay(req.params.accountId, req.params.petName, res);
+  console.log(req.body);
+  PInt.petPlay(req.params.accountId, req.params.petName, Number(boost), res);
 }
 async function petCareReq(req, res) {
   await PInt.petCare(req.body.item, req.params.accountId, req.params.petName, res);
@@ -118,6 +120,7 @@ async function purchaseItemReq(req, res) {
 app.get('/pets', (req, res) => {
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/pets/index.html'));
 });
+app.get('/leaderboard');
 app.get('/pets/create', (req, res) => {
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/createpet/index.html'));
 });

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg">
+  <circle cx="70", cy="70", r="50" style="stroke: #ffd675; fill: #ffd675; stroke-width: 45px"/>
+  <path stroke="#f10028" d="M 20 30, C 34 14 19 1 80 10, C 90 10 100 4 115 33, C 150 90 120 50 135 80, C 115 150 60 130 30 120, C 0 70 1 68 20 30" style="fill: pink"/>
+  <circle cx="70", cy="70" r="32" style="fill: white"/>
+</svg>

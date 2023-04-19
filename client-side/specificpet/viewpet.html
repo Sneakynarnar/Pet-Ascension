@@ -46,9 +46,69 @@
             </section>
         </form>
     </dialog>
-    <dialog id="gamedialog">
-        <p id="score">TESTINGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG</p>
-        <div id="game"></div>
+    <dialog id="memorygamedialog">
+        <h2>Pet Memory!</h2>
+        <p>Click the squares in the correct order to win!</p>
+        <p id="score">Level: 1</p>
+        <section id="memorygamecontainer">
+            <div id="memorygame"></div>
+            <div id="memorygamepetcontainer">    
+        </section>
+        <p id="boost"></p>
+        <button id="memoryclose">Close</button>
+    </dialog>
+    <dialog id="holgamedialog">
+        <h2>Pet Higher or Lower!</h2>
+        <p>Guess if the next card your pet draws will be higher or lower than their current card</p>
+        <section id="holcontainer">
+          <svg xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="Gradient1" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#b300ff" />
+                <stop offset="100%" stop-color="#1dc01d" />
+                <rect x='30' y='0' rx='6' ry='6' width='50' height='80' fill='url(#Gradient1)' style='stroke: black; stroke-width: 4;' />
+              </linearGradient>
+            </defs>
+            <g id="stack">
+              <rect x='46' y='18' rx='6' ry='6' width='50' height='80' fill='url(#Gradient1)' style='stroke: black; stroke-width: 4;' />
+              <rect x='44' y='16' rx='6' ry='6' width='50' height='80' fill='url(#Gradient1)' style='stroke: black; stroke-width: 4;' />
+              <rect x='40' y='14' rx='6' ry='6' width='50' height='80' fill='url(#Gradient1)' style='stroke: black; stroke-width: 4;' />
+              <rect x='36' y='12' rx='6' ry='6' width='50' height='80' fill='url(#Gradient1)' style='stroke: black; stroke-width: 4;' />
+              <rect x='32' y='10' rx='6' ry='6' width='50' height='80' fill='url(#Gradient1)' style='stroke: black; stroke-width: 4;' />
+            </g>
+          </svg>
+          <svg id="dupecardcontainer" class="hide" xmlns="http://www.w3.org/2000/svg">
+            <rect x='69' y='10' rx='6' ry='6' width='50' height='80' style="fill: white; stroke: black; stroke-width: 4;" />
+            <text id='cardnumberdupe' x="70" y="63" style="font-size: 3em;">10</text>
+          </svg>
+          <div class="maincontainer" style="translate: 28px -147px">
+            <div class="card" id="topcard">
+              <div class="front">
+                <svg xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="Gradient1" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="#b300ff" />
+                      <stop offset="100%" stop-color="#1dc01d" />
+                    </linearGradient>
+                  </defs>
+                  <rect x='0' y='0' rx='6' ry='6' width='50' height='80' fill='url(#Gradient1)' style='stroke: black; stroke-width: 4;' />
+                </svg>
+              </div>
+              <div class="back">
+                <svg xmlns="http://www.w3.org/2000/svg">
+                  <rect x='7' y='7' rx='6' ry='6' width='50' height='80' style="fill: white; stroke: black; stroke-width: 4" />
+                  <text id='cardnumber' x="21" y="60" style="font-size: 3em;">10</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+        <p id="holscore">0</p>
+        
+        </section>
+        <p id="holboost"></p>
+        <button id="higher">Higher!</button>
+        <button id="lower">Lower!</button>
+        <button id="holclose" class="hide">Done!</button>
     </dialog>
 </body>
 </html>

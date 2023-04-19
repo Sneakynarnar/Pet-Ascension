@@ -18,23 +18,38 @@ const cleanDialog = document.querySelector('#cleandialog');
 const cleanSelectMenu = document.querySelector('#cleanselect');
 const XPcounter = document.querySelector('#exp');
 const sacrifice = document.querySelector('#sacrifice');
-const gameDialog = document.querySelector('#gamedialog');
-const game = document.querySelector('#game');
+const memoryGameDialog = document.querySelector('#memorygamedialog');
+const game = document.querySelector('#memorygame');
 const level = document.querySelector('#level');
+const closeButton = document.querySelector('#memoryclose');
 const levelIndicator = document.querySelector('#score');
+const memoryGamePetContainer = document.querySelector('#memorygamepetcontainer');
+const holGameDialog = document.querySelector('#holgamedialog');
+const topCard = document.querySelector('#topcard');
+const dupeCard = document.querySelector('#dupecardcontainer');
+const dupeCardNumber = document.querySelector('#cardnumberdupe');
+const cardNumber = document.querySelector('#cardnumber');
+const holScoreEl = document.querySelector('#holscore');
+const boost = document.querySelector('#boost');
+const higher = document.querySelector('#higher');
+const lower = document.querySelector('#lower');
+const holclose = document.querySelector('#holclose');
+const holBoost = document.querySelector('#holboost');
+let holScore = 0;
 // variables
 let playCom = [];
 let combination = [];
 let gamelevel = 1;
 let playing = false;
-
+const MAX_HOL_NUMBER = 9;
 const petName = window.location.pathname.slice(25);
 const accountId = window.location.pathname.slice(6, 24);
 const apiPath = window.location.pathname.slice(6);
+let petStats;
 let payload;
 async function updateMeters() {
   const response = await fetch('http://localhost:8080/api/' + apiPath);
-  const petStats = await response.json();
+  petStats = await response.json();
   level.textContent = `level: ${petStats.level}`;
   if (petStats.level > 15) {
     sacrifice.disabled = false;
@@ -70,7 +85,8 @@ async function petPlay(boost) {
   console.log('playing');
   const response = await fetch('http://localhost:8080/api/' + apiPath + '/play', {
     method: 'POST',
-    body: { boost },
+    body: JSON.stringify({ boost: boost - 1 }),
+    headers: { 'Content-Type': 'application/json' },
   });
   if (response.ok) {
     await updateMeters();
@@ -78,11 +94,16 @@ async function petPlay(boost) {
     console.log('pet too tired to play');
   }
 }
-function startGame() {
-  gameDialog.showModal();
-  console.log('starting memory game');
-  nextLevel(gamelevel);
+
+async function startRandomGame() {
+  if (Math.round(Math.random() * 2) === 1) {
+    startHigherOrLower();
+  } else {
+    startMemoryGame();
+  }
 }
+
+
 function petFeed() {
   let newOption;
   let itemData;
@@ -94,6 +115,10 @@ function petFeed() {
   feedSelectMenu.appendChild(newOption);
   console.log(`ownedItems = ${JSON.stringify(payload.owned)}`);
   for (const item of Object.keys(payload.owned)) {
+    console.log(item);
+    if (item === 'pet_blood') {
+      continue;
+    }
     console.log(`Item: ${item}`);
     itemData = payload.info[item];
     console.log(itemData);
@@ -118,6 +143,9 @@ function petClean() {
   console.log(`ownedItems = ${payload.owned}`);
   for (const item of Object.keys(payload.owned)) {
     itemData = payload.info[item];
+    if (item === 'pet_blood') {
+      continue;
+    }
     if (itemData.type === 0) {
       newOption = document.createElement('option');
       newOption.textContent = itemData.name;
@@ -157,6 +185,14 @@ function handleSelections(confirm, selectMenu) {
 }
 
 // memory game
+function startMemoryGame() {
+  game.addEventListener('click', memoryGameClickHandler);
+  boost.textContent = '';
+  memoryGameDialog.showModal();
+  console.log('starting memory game');
+  gamelevel = 1;
+  nextLevel(gamelevel);
+}
 function setupMemoryGame() {
   for (let i = 1; i <= 9; i++) {
     const div = document.createElement('div');
@@ -164,13 +200,30 @@ function setupMemoryGame() {
     div.classList.add('memoryspace');
     game.append(div);
   }
-  game.addEventListener('click', memoryGameClickHandler);
+  // memoryGameDialog.remove(closeButton);
+  const petSvg = document.createElement('object');
+  // petSvg.type = 'image/svg+xml';
+  petSvg.id = 'gamepet';
+  petSvg.data = `/petsvgs/${petStats.type}.svg`;
+  petSvg.width = 200;
+  petSvg.height = 200;
+  if (memoryGamePetContainer.children.length === 0) {
+    memoryGamePetContainer.appendChild(petSvg);
+  }
+  boost.textContent = '';
 }
-async function endGame() {
+function endGame(space) {
   game.classList.remove('right', 'wrong');
-  gamelevel = 1;
-  gameDialog.close();
-  await petPlay(level);
+  const spaceElement = document.querySelector('#space' + space);
+  game.removeEventListener('click', memoryGameClickHandler);
+  const boostAmount = (gamelevel - 1) * 10 > 100 ? 100 : (gamelevel - 1) * 10;
+  boost.textContent = `You have earned a ${boostAmount}% happiness boost!`;
+  spaceElement.classList.add('wrongfunction');
+  memoryGameDialog.appendChild(closeButton);
+}
+async function closeDialog(e) {
+  memoryGameDialog.close();
+  await petPlay(gamelevel);
 }
 function rightAnswer() {
   game.classList.add('right');
@@ -180,20 +233,19 @@ function rightAnswer() {
   , 1000);
   playing = true;
   nextLevel(++gamelevel);
-  const levelIndicator = document.querySelector('#score');
-  levelIndicator.textContent = 'Level: ' + level;
+  levelIndicator.textContent = 'Level: ' + gamelevel;
   playCom = [];
 }
-async function memoryGameClickHandler(e) {
+function memoryGameClickHandler(e) {
   if (!playing) {
-    e.target.style = 'background-color: red';
+    e.target.style = 'background-color: green';
     setTimeout(() => { e.target.style = 'background-color: lime'; }, 100);
     playCom.push(Number(e.target.id[5]));
     for (let i = 0; i < playCom.length; i++) {
       if (combination[i] !== playCom[i]) {
         combination = [];
         playCom = [];
-        await endGame();
+        endGame(Number(e.target.id[5]));
         return;
       }
     }
@@ -229,16 +281,115 @@ function nextLevel(lvl) {
   nextSpace();
   const intId = setInterval(playSequence, 1000);
 }
+// higher or lower game
+
+function startHigherOrLower() {
+  holScore = 0;
+  holScoreEl.textContent = holScore;
+  higher.classList.remove('hide');
+  lower.classList.remove('hide');
+  holclose.classList.add('hide');
+  const petSvg = document.createElement('object');
+  // petSvg.type = 'image/svg+xml';
+  petSvg.id = 'holpet';
+  petSvg.data = `/petsvgs/${petStats.type}.svg`;
+  petSvg.width = 200;
+  petSvg.height = 200;
+  const cardStack = document.createElement('object');
+  cardStack.type = 'image/svg+xml';
+  cardStack.id = 'cardstack';
+  cardStack.data = '/svgassets/cardstack.svg';
+  const holContainer = document.querySelector('#holcontainer');
+  if (holContainer.children[0].id !== 'holpet') {
+    holContainer.prepend(petSvg);
+  }
+  holGameDialog.showModal();
+  firstCard();
+}
+
+
+function firstCard() {
+  // const cardStack = document.querySelector('#cardstack');
+  topCard.classList.remove('hide');
+  dupeCard.classList.add('hide');
+  const randomNumber = Math.round(Math.random() * MAX_HOL_NUMBER);
+  cardNumber.textContent = randomNumber;
+  dupeCardNumber.textContent = randomNumber;
+  dupeCardNumber.style = 'font-size: 3em; translate: 13px';
+  console.log(cardNumber);
+  cardNumber.style = randomNumber <= 10 ? 'font-size: 3em;' : 'font-size: 3em; translate: -13px';
+  topCard.style.animation = 'moveanimation 0.3s linear 1 normal';
+  setTimeout(() => {
+    topCard.style = 'transform: translate(200px);';
+    topCard.style.animation = 'flipanimation 0.2s linear 1 normal forwards';
+  }, 300);
+  setTimeout(() => {
+    topCard.classList.add('hide');
+    dupeCard.classList.remove('hide');
+  }, 500);
+}
+function guess(e) {
+  let nextNumber = Math.round(Math.random() * MAX_HOL_NUMBER);
+  const currentNumber = Number(cardNumber.textContent);
+  console.log(`Next card = ${nextNumber}, currentCard = ${currentNumber}`);
+  while (nextNumber === currentNumber) {
+    nextNumber = Math.round(Math.random() * MAX_HOL_NUMBER);
+  }
+  if (e.target.id === 'lower') {
+    nextCard(nextNumber, currentNumber, nextNumber < currentNumber);
+  } else if (e.target.id === 'higher') {
+    nextCard(nextNumber, currentNumber, nextNumber > currentNumber);
+  }
+}
+
+function endHolGame() {
+  higher.classList.add('hide');
+  lower.classList.add('hide');
+  holclose.classList.remove('hide');
+  const boostAmount = holScore * 10 > 100 ? 100 : holScore * 10;
+  holBoost.textContent = `You have earned a ${boostAmount}% happiness boost!`;
+}
+
+function closeHolDialog() {
+  petPlay(holScore);
+  holGameDialog.close();
+}
+
+function nextCard(nextNumber, currentNumber, correct) {
+  dupeCardNumber.textContent = currentNumber;
+  dupeCardNumber.style = 'font-size: 3em; translate: 13px';
+  topCard.style = '';
+  topCard.classList.remove('hide');
+  cardNumber.textContent = nextNumber;
+  cardNumber.style = nextNumber <= 10 ? 'font-size: 3em;' : 'font-size: 3em; translate: 13px';
+  topCard.style.animation = 'moveanimation 0.3s linear 1 normal';
+  setTimeout(() => {
+    topCard.style = 'transform: translate(200px);';
+    topCard.style.animation = 'flipanimation 0.2s linear 1 normal forwards';
+  }, 300);
+  setTimeout(() => {
+    if (correct) {
+      holScore += 1;
+      holScoreEl.textContent = holScore;
+    } else {
+      endHolGame();
+    }
+  }, 300);
+}
 async function main() {
   await updateMeters();
-  playButton.addEventListener('click', startGame);
+  playButton.addEventListener('click', startRandomGame);
   feedButton.addEventListener('click', petFeed);
   cleanButton.addEventListener('click', petClean);
   sacrifice.addEventListener('click', sacrificePet);
+  higher.addEventListener('click', guess);
+  lower.addEventListener('click', guess);
+  holclose.addEventListener('click', closeHolDialog);
   cleanSelectMenu.addEventListener('change', () => { handleSelections(confirmClean, cleanSelectMenu); });
   feedSelectMenu.addEventListener('change', () => { handleSelections(confirmFeed, feedSelectMenu); });
   feedDialog.addEventListener('close', () => { sendCareRequest(confirmFeed); });
   cleanDialog.addEventListener('close', () => { sendCareRequest(confirmClean); });
+  closeButton.addEventListener('click', closeDialog);
   setupMemoryGame();
   const shopLink = document.createElement('a');
   const itemRes = await fetch('http://localhost:8080/api/' + accountId + '/items', {
