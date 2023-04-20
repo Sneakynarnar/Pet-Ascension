@@ -9,7 +9,7 @@
        <rect x='30' y='0' rx='6' ry='6' width='50' height='80' fill= 'url(#Gradient1)' style = 'stroke: black; stroke-width: 4;'/>
       </linearGradient>
     </defs>
-    <g id="stack">
+    <g id="stack"> 
       <rect x='46' y='18' rx='6' ry='6' width='50' height='80' fill= 'url(#Gradient1)' style = 'stroke: black; stroke-width: 4;'/>
       <rect x='44' y='16' rx='6' ry='6' width='50' height='80' fill= 'url(#Gradient1)' style = 'stroke: black; stroke-width: 4;'/>
       <rect x='40' y='14' rx='6' ry='6' width='50' height='80' fill= 'url(#Gradient1)' style = 'stroke: black; stroke-width: 4;'/>

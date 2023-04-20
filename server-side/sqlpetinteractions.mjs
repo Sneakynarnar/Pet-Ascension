@@ -3,11 +3,11 @@ import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import fs from 'fs/promises';
 const hour = 1000 * 3600;
-const HUNGER_DECAY = 2500;
-const CLEANLINESS_DECAY = 2000;
+const HUNGER_DECAY = 30000;
+const CLEANLINESS_DECAY = 5;
 const BASE_NP_RATE = 10000;
 const BASE_LEVEL_BOOST = 10;
-const FITNESS_DECAY = 3000;
+const FITNESS_DECAY = 5;
 const BASE_HAPPINESS_POINTS = 20;
 const MIN_SACRIFICE_LEVEL = 15;
 const ALLOWED_PLAYS_PER_SESSION = 3;
@@ -57,16 +57,16 @@ export async function purchaseItem(accountId, itemName, res) {
   await db.run('UPDATE Accounts SET NP = ?, items = ? WHERE accountId = ?', [account.NP, JSON.stringify(account.items), accountId]);
   res.json(account);
 }
-export async function createPet(accountId, petName, type) {
-  const defaultLastInteract = Date.now() - 36000000; // Last interact by default is set to 5 hours ago
+export async function createPet(accountId, petName, type, colors) {
+  const defaultLastInteract = Date.now() - hour * 2;
   const now = Date.now();
   const db = await connect;
-  const duplicates = await db.get('SELECT * FROM Pets WHERE accountId = ? AND petName = ?', [accountId, petName])
+  const duplicates = await db.get('SELECT * FROM Pets WHERE accountId = ? AND petName = ?', [accountId, petName]);
   if (duplicates !== undefined) {
     console.log(`Pet already exists: ${duplicates}`);
     return false;
   }
-  await db.run('INSERT INTO Pets VALUES (:accountId, :petName, :dateCreated, :type, :cleanliness, :happiness, :hunger, :level, :XP, :rank, :last_updated, :last_feed_update, :last_play_update, :last_clean_update, :playCount, :dead)', {
+  await db.run('INSERT INTO Pets VALUES (:accountId, :petName, :dateCreated, :type, :cleanliness, :happiness, :hunger, :level, :XP, :rank, :last_updated, :last_feed_update, :last_play_update, :last_clean_update, :playCount, :timesPlayed, :timesCleaned, :timesFed, :dead, :diedAt, :colors)', {
     ':accountId': accountId,
     ':petName': petName,
     ':dateCreated': now,
@@ -81,8 +81,13 @@ export async function createPet(accountId, petName, type) {
     ':last_play_update': defaultLastInteract,
     ':last_clean_update': defaultLastInteract,
     ':playCount': 0,
+    ':timesPlayed': 0,
+    ':timesCleaned': 0,
+    ':timesFed': 0,
     ':last_updated': now,
     ':dead': false,
+    ':diedAt': null,
+    ':colors': colors,
   });
 }
 export async function readAccounts(accountId = null) {
@@ -92,6 +97,11 @@ export async function readAccounts(accountId = null) {
   console.log(accounts);
 
   return accounts;
+}
+export async function getLeaderBoard() {
+  const db = await connect;
+  const petLeaderBoard = await db.all('SELECT * FROM Accounts WHERE dead = false ORDER BY level, EXP DESC');
+  return JSON.stringify({ rows: petLeaderBoard });
 }
 export async function createAccount(accountId) {
   const db = await connect;
@@ -130,13 +140,14 @@ export async function updatePets(accountId) {
   const db = await connect;
   const pets = await getAccountPets(accountId);
   const account = await readAccounts(accountId);
-  if (pets === undefined) { return null; }
+  if (pets === undefined || account === undefined) { return null; }
   let now = Date.now();
   let totalNpEarned = 0;
   for (const pet of pets) {
-    pet.hunger -= Math.round(((now - pet.last_feed_update) / hour) * HUNGER_DECAY);
-    pet.fitness -= Math.round(((now - pet.last_play_update) / hour) * FITNESS_DECAY);
-    pet.cleanliness -= Math.round(((now - pet.last_clean_update) / hour) * CLEANLINESS_DECAY);
+    if (pet.dead) { continue; }
+    pet.hunger -= Math.round(((now - pet.last_updated) / hour) * HUNGER_DECAY);
+    pet.fitness -= Math.round(((now - pet.last_updated) / hour) * FITNESS_DECAY);
+    pet.cleanliness -= Math.round(((now - pet.last_updated) / hour) * CLEANLINESS_DECAY);
     pet.hunger = pet.hunger < 0 ? 0 : pet.hunger;
     pet.cleanliness = pet.cleanliness < 0 ? 0 : pet.cleanliness;
     pet.fitness = pet.fitness < 0 ? 0 : pet.fitness;
@@ -146,8 +157,11 @@ export async function updatePets(accountId) {
     pet.last_updated = now;
     if (pet.hunger <= 0) {
       pet.dead = true;
+      console.log('In here for some reason');
+      pet.diedAt = now;
     }
-    db.run('UPDATE Pets SET hunger = ?, fitness = ?, cleanliness = ?, last_updated = ? WHERE accountId = ? AND petName = ?', pet.hunger, pet.fitness, pet.cleanliness, pet.last_updated, accountId, pet.petName);
+    console.log(`last updated ${(now - pet.last_updated) / hour} hours ago`);
+    db.run('UPDATE Pets SET hunger = ?, fitness = ?, cleanliness = ?, last_updated = ?, dead = ?, diedAt = ? WHERE accountId = ? AND petName = ?', pet.hunger, pet.fitness, pet.cleanliness, pet.last_updated, pet.dead, pet.diedAt, accountId, pet.petName);
   }
   account.NP += totalNpEarned;
   db.run('UPDATE Accounts SET NP = ? WHERE accountId = ?', account.NP, accountId);
@@ -192,11 +206,13 @@ export async function petCare(itemId, accountId, petName, res) {
     if (item.type === 0) {
       pet.last_clean_update = Date.now();
       pet.cleanliness += item.value;
-      db.run('UPDATE Pets SET last_clean_update = ?, cleanliness = ? WHERE accountId = ? ', pet.last_clean_update, pet.cleanliness, accountId);
+      pet.timesCleaned += 1;
+      db.run('UPDATE Pets SET last_clean_update = ?, cleanliness = ?, timesCleaned = ? WHERE accountId = ? ', pet.last_clean_update, pet.cleanliness, pet.timesCleaned, accountId);
     } else {
       pet.last_feed_update = Date.now();
       pet.hunger += item.value;
-      db.run('UPDATE Pets SET last_feed_update = ?, hunger = ? WHERE accountId = ?', pet.last_feed_update, pet.hunger, accountId);
+      pet.timesFed += 1;
+      db.run('UPDATE Pets SET last_feed_update = ?, hunger = ?, timesFed = ? WHERE accountId = ?', pet.last_feed_update, pet.hunger, pet.timesFed, accountId);
     }
     handleXPGain(XP, accountId, petName);
     account.items[itemId] -= 1;
@@ -204,6 +220,25 @@ export async function petCare(itemId, accountId, petName, res) {
     res.status(200).send('Stat increased!');
   } else {
     res.status(403, 'Pet refusing to interact');
+  }
+}
+
+export async function checkPetPlay(accountId, petName, res) {
+  const now = Date.now();
+  const pet = await getAccountPets(accountId, petName);
+  console.log(`Playing with pet: ${JSON.stringify(pet)}`);
+  const lastPlayed = now - pet.last_play_update;
+  const playCount = pet.playCount;
+  console.log(` lastPlayed: ${lastPlayed / 1000 * 60}  seconds ago cooldown: ${PLAY_COOLDOWN_HOURS / 1000 * 60}`);
+  if (lastPlayed > hour * PLAY_COOLDOWN_HOURS || playCount <= ALLOWED_PLAYS_PER_SESSION) {
+    if (lastPlayed >= hour * PLAY_COOLDOWN_HOURS) { pet.playCount = 0; }
+    if (pet.playCount >= ALLOWED_PLAYS_PER_SESSION) {
+      res.status(403).send(`Exceeded plays per ${PLAY_COOLDOWN_HOURS} hour(s) `);
+      return;
+    }
+    if (pet.fitness + BASE_HAPPINESS_POINTS > 100) {
+      res.status(403).send('Pet is max fitness.');
+    }
   }
 }
 export async function petPlay(accountId, petName, boost, res) {
@@ -217,11 +252,11 @@ export async function petPlay(accountId, petName, boost, res) {
   if (lastPlayed > hour * PLAY_COOLDOWN_HOURS || playCount <= ALLOWED_PLAYS_PER_SESSION) {
     if (lastPlayed >= hour * PLAY_COOLDOWN_HOURS) { pet.playCount = 0; }
     if (pet.playCount >= ALLOWED_PLAYS_PER_SESSION) {
-      res.status(403).end(`Exceeded plays per ${PLAY_COOLDOWN_HOURS} hour(s) `);
+      res.status(403).send(`Exceeded plays per ${PLAY_COOLDOWN_HOURS} hour(s) `);
       return;
     }
     if (pet.fitness + BASE_HAPPINESS_POINTS > 100) {
-      res.status(403).end('Pet is max fitness.');
+      res.status(403).send('Pet is max fitness.');
       return;
     }
     console.log(`boost was initially ${boost}`);
@@ -231,7 +266,7 @@ export async function petPlay(accountId, petName, boost, res) {
     pet.playCount++;
     pet.last_play_update = now;
     handleXPGain(PLAY_BASE_XP, accountId, petName);
-    db.run('UPDATE Pets SET playCount = ?, fitness = ?, last_play_update = ?', pet.playCount, pet.fitness, pet.last_play_update);
+    db.run('UPDATE Pets SET playCount = ?, fitness = ?, last_play_update = ?, timesPlayed = ? WHERE accountId = ? AND petName = ?', pet.playCount, pet.fitness, pet.last_play_update, pet.timesPlayed, accountId, petName);
     res.status(200).end('Fitness increased');
   }
 }

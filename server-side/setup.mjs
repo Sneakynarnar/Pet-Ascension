@@ -17,7 +17,7 @@ async function initDataBase() {
   await db.run('DROP TABLE IF EXISTS Accounts;');
   await db.run('DROP TABLE IF EXISTS Pets;');
   await db.run('CREATE TABLE Accounts (accountId char(25), NP INT, items char(2000))');
-  await db.run('CREATE TABLE Pets (accountId char(25), petName CHAR(12), dateCreated INT, type CHAR(5), cleanliness INT, hunger INT, fitness INT, level INT, XP INT, rank INT, last_updated INT, last_feed_update INT, last_play_update INT, last_clean_update INT, playCount INT, dead BOOLEAN)');
+  await db.run('CREATE TABLE Pets (accountId char(25), petName CHAR(12), dateCreated INT, type CHAR(5), cleanliness INT, hunger INT, fitness INT, level INT, XP INT, rank INT, last_updated INT, last_feed_update INT, last_play_update INT, last_clean_update INT, playCount INT, timesPlayed INT, timesCleaned INT, timesFed INT, dead BOOLEAN, diedAt INT, colors char(2000))');
 }
 
 await initDataBase()

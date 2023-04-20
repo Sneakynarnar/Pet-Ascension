@@ -5,6 +5,26 @@
     max-width: 50em;  
     min-height: 25em;
   }
+  .petcontainer {
+    position: flex;
+    justify-content: center;
+    width: 200px;
+    height: 200px;
+    position: relative;
+    margin: 0px;
+}
+.notpet {
+  visibility: hidden;
+}
+
+.animal {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 
   .wrongend {
     background-color: red;

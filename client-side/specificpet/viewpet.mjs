@@ -35,6 +35,7 @@ const higher = document.querySelector('#higher');
 const lower = document.querySelector('#lower');
 const holclose = document.querySelector('#holclose');
 const holBoost = document.querySelector('#holboost');
+const deathStats = document.querySelector('#deathstats');
 let holScore = 0;
 // variables
 let playCom = [];
@@ -56,17 +57,23 @@ async function updateMeters() {
   }
   XPcounter.textContent = `${petStats.XP}/10000`;
   const petSvg = document.createElement('object');
-  // petSvg.type = 'image/svg+xml';
-  petSvg.data = `/petsvgs/${petStats.type}.svg`;
-  petSvg.width = 200;
-  petSvg.height = 200;
-  if (petContainer.children.length === 0) {
-    petContainer.appendChild(petSvg);
-  }
 
+  for (const elem of document.querySelectorAll(`#${petStats.type}pre`)) {
+    elem.classList.remove('notpet');
+  }
   NPamount.textContent = `NP: ${petStats.NP}`;
   petNameTitle.textContent = petName;
-
+  let colorelements;
+  petStats.colors = JSON.parse(petStats.colors);
+  console.log(petStats.colors);
+  for (const [part, color] of Object.entries(petStats.colors)) {
+    console.log(part);
+    console.log('.pre' + petStats.type + part);
+    colorelements = document.querySelectorAll('.pre' + petStats.type + part);
+    for (const elem of colorelements) {
+      elem.style = `fill: ${color}; `;
+    }
+  }
   if (petStats.dead) {
     level.textContent = `level: Doesn't matter ${petStats.petName} is dead`;
     XPcounter.textContent = '';
@@ -74,6 +81,9 @@ async function updateMeters() {
     playButton.disabled = true;
     feedButton.disabled = true;
     sacrifice.disabled = true;
+    console.log(`Number: ${petStats.diedAt}`);
+    const timeAliveWordified = wordifyTimeInMilliseconds(Number(petStats.diedAt) - Number(petStats.dateCreated));
+    deathStats.textContent = `Level reached: ${petStats.level}\n Lived for: ${timeAliveWordified}\nGuild level: ${petStats.rank}\nTimes fed: ${petStats.timesFed}\nTimes cleaned: ${petStats.timesCleaned}\nTimes played: ${petStats.timesPlayed}`;
   }
   fitnessMeter.value = Math.round(petStats.fitness);
   hungerMeter.value = Math.round(petStats.hunger);
@@ -95,7 +105,34 @@ async function petPlay(boost) {
   }
 }
 
-async function startRandomGame() {
+function wordifyTimeInMilliseconds(time) {
+  console.log(time);
+  let days = 0;
+  let hours = 0;
+  let minutes = 0;
+  let seconds = 0;
+  let milliseconds = 0;
+  while (time > 0) {
+    if (time > 1000 * 3600 * 24) {
+      time -= 1000 * 3600 * 24;
+      days += 1;
+    } else if (time > 1000 * 3600) {
+      time -= 1000 * 3600;
+      hours += 1;
+    } else if (time > 1000 * 60) {
+      time -= 1000 * 60;
+      minutes += 1;
+    } else if (time > 1000) {
+      time -= 1000;
+      seconds += 1;
+    } else {
+      milliseconds = time;
+      time = 0;
+    }
+  }
+  return `${days} day(s), ${hours} hour(s), ${minutes} minute(s), ${seconds} second(s),`;
+}
+function startRandomGame() {
   if (Math.round(Math.random() * 2) === 1) {
     startHigherOrLower();
   } else {
@@ -201,15 +238,7 @@ function setupMemoryGame() {
     game.append(div);
   }
   // memoryGameDialog.remove(closeButton);
-  const petSvg = document.createElement('object');
-  // petSvg.type = 'image/svg+xml';
-  petSvg.id = 'gamepet';
-  petSvg.data = `/petsvgs/${petStats.type}.svg`;
-  petSvg.width = 200;
-  petSvg.height = 200;
-  if (memoryGamePetContainer.children.length === 0) {
-    memoryGamePetContainer.appendChild(petSvg);
-  }
+
   boost.textContent = '';
 }
 function endGame(space) {
@@ -289,20 +318,10 @@ function startHigherOrLower() {
   higher.classList.remove('hide');
   lower.classList.remove('hide');
   holclose.classList.add('hide');
-  const petSvg = document.createElement('object');
-  // petSvg.type = 'image/svg+xml';
-  petSvg.id = 'holpet';
-  petSvg.data = `/petsvgs/${petStats.type}.svg`;
-  petSvg.width = 200;
-  petSvg.height = 200;
   const cardStack = document.createElement('object');
   cardStack.type = 'image/svg+xml';
   cardStack.id = 'cardstack';
   cardStack.data = '/svgassets/cardstack.svg';
-  const holContainer = document.querySelector('#holcontainer');
-  if (holContainer.children[0].id !== 'holpet') {
-    holContainer.prepend(petSvg);
-  }
   holGameDialog.showModal();
   firstCard();
 }

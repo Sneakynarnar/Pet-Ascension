@@ -29,7 +29,7 @@ async function createPetReq(req, res) {
   }
   const pet = await db.get('SELECT * FROM Pets WHERE accountId = ?', [req.body.name]);
   if (pet === undefined) {
-    PInt.createPet(req.body.id, req.body.name, req.body.animaltype);
+    PInt.createPet(req.body.id, req.body.name, req.body.animaltype, JSON.stringify(req.body.colors));
   } else {
     res.status(403).send('A pet already exists with that name!');
   }
@@ -103,7 +103,6 @@ async function petPlay(req, res) {
     res.status(404).end('Account not found,');
     return;
   }
-  console.log(req.body);
   PInt.petPlay(req.params.accountId, req.params.petName, Number(boost), res);
 }
 async function petCareReq(req, res) {
@@ -117,10 +116,16 @@ async function purchaseItemReq(req, res) {
     res.status(404).end('Item not found');
   }
 }
+
+function getLeaderboardReq(req, res) {
+  res.json(PInt.getLeaderboard());
+}
 app.get('/pets', (req, res) => {
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/pets/index.html'));
 });
-app.get('/leaderboard');
+app.get('/leaderboard', () => {
+
+});
 app.get('/pets/create', (req, res) => {
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/createpet/index.html'));
 });
@@ -143,6 +148,7 @@ app.get('/pets/:accountId/:petName', showSpecificPet);
 app.get('/api/:accountId', getAllAccountJson);
 app.get('/api/:accountId/items', getAccountItems);
 app.get('/api/:accountId/:petName', getPetJson);
+app.get('/api/leaderboard', getLeaderboardReq);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
