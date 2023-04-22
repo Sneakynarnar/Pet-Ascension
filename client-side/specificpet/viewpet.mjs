@@ -36,6 +36,11 @@ const lower = document.querySelector('#lower');
 const holclose = document.querySelector('#holclose');
 const holBoost = document.querySelector('#holboost');
 const deathStats = document.querySelector('#deathstats');
+const feedPetPreview = document.querySelector('#feedpetpreview');
+const feedMeterPreview = document.querySelector('#hungerpreview');
+const cleanMeterPreview = document.querySelector('#cleanpreview');
+const cleanPetPreview = document.querySelector('#cleanpetpreview');
+const sacrificeDialog = document.querySelector('#sacrificedialog');
 let holScore = 0;
 // variables
 let playCom = [];
@@ -52,11 +57,10 @@ async function updateMeters() {
   const response = await fetch('http://localhost:8080/api/' + apiPath);
   petStats = await response.json();
   level.textContent = `level: ${petStats.level}`;
-  if (petStats.level > 15) {
+  if (petStats.level < 15) {
     sacrifice.disabled = false;
   }
   XPcounter.textContent = `${petStats.XP}/10000`;
-  const petSvg = document.createElement('object');
 
   for (const elem of document.querySelectorAll(`#${petStats.type}pre`)) {
     elem.classList.remove('notpet');
@@ -65,10 +69,7 @@ async function updateMeters() {
   petNameTitle.textContent = petName;
   let colorelements;
   petStats.colors = JSON.parse(petStats.colors);
-  console.log(petStats.colors);
   for (const [part, color] of Object.entries(petStats.colors)) {
-    console.log(part);
-    console.log('.pre' + petStats.type + part);
     colorelements = document.querySelectorAll('.pre' + petStats.type + part);
     for (const elem of colorelements) {
       elem.style = `fill: ${color}; `;
@@ -86,8 +87,8 @@ async function updateMeters() {
     deathStats.textContent = `Level reached: ${petStats.level}\n Lived for: ${timeAliveWordified}\nGuild level: ${petStats.rank}\nTimes fed: ${petStats.timesFed}\nTimes cleaned: ${petStats.timesCleaned}\nTimes played: ${petStats.timesPlayed}`;
   }
   fitnessMeter.value = Math.round(petStats.fitness);
-  hungerMeter.value = Math.round(petStats.hunger);
-  cleanMeter.value = Math.round(petStats.cleanliness);
+  hungerMeter.value = feedMeterPreview.value = Math.round(petStats.hunger);
+  cleanMeter.value = cleanMeterPreview.value = Math.round(petStats.cleanliness);
   happinessMeter.value = (petStats.fitness + petStats.hunger + petStats.cleanliness) / 3;
 }
 
@@ -106,7 +107,6 @@ async function petPlay(boost) {
 }
 
 function wordifyTimeInMilliseconds(time) {
-  console.log(time);
   let days = 0;
   let hours = 0;
   let minutes = 0;
@@ -141,59 +141,42 @@ function startRandomGame() {
 }
 
 
-function petFeed() {
-  let newOption;
-  let itemData;
-  confirmFeed.disabled = true;
-  feedSelectMenu.replaceChildren();
-  newOption = document.createElement('option');
-  newOption.textContent = 'Select food...';
-  newOption.value = 'default';
-  feedSelectMenu.appendChild(newOption);
-  console.log(`ownedItems = ${JSON.stringify(payload.owned)}`);
-  for (const item of Object.keys(payload.owned)) {
-    console.log(item);
+async function petFeed() {
+  let counter;
+  for (const [item, count] of Object.entries(payload.owned)) {
     if (item === 'pet_blood') {
       continue;
     }
-    console.log(`Item: ${item}`);
-    itemData = payload.info[item];
-    console.log(itemData);
-    if (itemData.type === 1) {
-      newOption = document.createElement('option');
-      newOption.textContent = itemData.name;
-      newOption.value = item;
-      feedSelectMenu.appendChild(newOption);
+    if (payload.info[item].type === 1) {
+      console.log(item);
+      counter = document.querySelector(`#${item}count`);
+      counter.textContent = count;
     }
   }
+  await updateMeters();
   feedDialog.showModal();
 }
-function petClean() {
-  let newOption;
-  let itemData;
-  confirmClean.disabled = true;
-  cleanSelectMenu.replaceChildren();
-  newOption = document.createElement('option');
-  newOption.textContent = 'Select cleaning item...';
-  newOption.value = 'default';
-  cleanSelectMenu.appendChild(newOption);
-  console.log(`ownedItems = ${payload.owned}`);
-  for (const item of Object.keys(payload.owned)) {
-    itemData = payload.info[item];
+async function petClean() {
+  let counter;
+  for (const [item, count] of Object.entries(payload.owned)) {
     if (item === 'pet_blood') {
       continue;
     }
-    if (itemData.type === 0) {
-      newOption = document.createElement('option');
-      newOption.textContent = itemData.name;
-      newOption.value = item;
-      cleanSelectMenu.appendChild(newOption);
+    if (payload.info[item].type === 0) {
+      console.log(item);
+      counter = document.querySelector(`#${item}count`);
+      counter.textContent = count;
     }
   }
+  await updateMeters();
   cleanDialog.showModal();
 }
+function sacrificePet() {
+  sacrificeDialog.showModal();
+}
 
-async function sacrificePet() {
+
+async function sacrificePetReq() {
   const response = await fetch('http://localhost:8080/pets/' + apiPath + '/sacrifice', {
     method: 'POST',
   });
@@ -202,24 +185,19 @@ async function sacrificePet() {
     await updateMeters();
   }
 }
-async function sendCareRequest(confirm) {
-  if (confirm.value === 'default') { return; }
+async function sendCareRequest(item) {
   const response = await fetch('http://localhost:8080/api/' + apiPath + '/care', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ item: confirm.value }),
+    body: JSON.stringify({ item }),
   });
   if (response.ok) {
     await updateMeters();
   } else {
-    console.log(await response.text());
+    return response;
   }
 }
-function handleSelections(confirm, selectMenu) {
-  confirm.value = selectMenu.value;
-  console.log(confirmClean.value);
-  confirm.disabled = confirm.value === 'default';
-}
+
 
 // memory game
 function startMemoryGame() {
@@ -295,7 +273,6 @@ function nextLevel(lvl) {
   function playSequence() {
     console.log(combination);
     const space = combination[counter];
-    console.log(space);
     spaceElement = document.querySelector('#space' + space);
     spaceElement.style = 'background-color: red';
     setTimeout(() => { spaceElement.style = 'background-color: lime'; }, 500);
@@ -335,7 +312,6 @@ function firstCard() {
   cardNumber.textContent = randomNumber;
   dupeCardNumber.textContent = randomNumber;
   dupeCardNumber.style = 'font-size: 3em; translate: 13px';
-  console.log(cardNumber);
   cardNumber.style = randomNumber <= 10 ? 'font-size: 3em;' : 'font-size: 3em; translate: -13px';
   topCard.style.animation = 'moveanimation 0.3s linear 1 normal';
   setTimeout(() => {
@@ -395,6 +371,51 @@ function nextCard(nextNumber, currentNumber, correct) {
     }
   }, 300);
 }
+function handleDrag(e) {
+  // e.preventDefault();
+  e.dataTransfer.setData('text/plain', e.target.id);
+  const counterElement = document.querySelector(`#${e.target.id}count`);
+  counterElement.textContent = Number(counterElement.textContent) - 1;
+  console.log(counterElement);
+  e.dataTransfer.effectAllowed = 'copy';
+}
+function handleDragEnter(e) {
+  e.currentTarget.classList.add('over');
+}
+function handleDragLeave(e) {
+  e.currentTarget.classList.remove('over');
+}
+function handleDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('over');
+  e.dataTransfer.dropEffect = 'copy';
+}
+async function handleDrop(e) {
+  console.log('dropped');
+  e.preventDefault();
+  const data = e.dataTransfer.getData('text/plain');
+  console.log(data);
+  console.log(payload.owned[data]);
+  if (payload.owned[data] > 0) {
+    const response = await sendCareRequest(data);
+    if (response.ok) {
+      if (payload.info[data].type === 1) {
+        feedMeterPreview.value += payload.info[data].value;
+      } else {
+        cleanMeterPreview.value += payload.info[data].value;
+      }
+    } else {
+      console.log(await response.text());
+    }
+  }
+}
+function handleDragCancel(e) {
+  console.log(e.dataTransfer.dropEffect);
+  if (e.dataTransfer.dropEffect === 'none') {
+    const counterElement = document.querySelector(`#${e.target.id}count`);
+    counterElement.textContent = Number(counterElement.textContent) + 1;
+  }
+}
 async function main() {
   await updateMeters();
   playButton.addEventListener('click', startRandomGame);
@@ -404,11 +425,29 @@ async function main() {
   higher.addEventListener('click', guess);
   lower.addEventListener('click', guess);
   holclose.addEventListener('click', closeHolDialog);
-  cleanSelectMenu.addEventListener('change', () => { handleSelections(confirmClean, cleanSelectMenu); });
-  feedSelectMenu.addEventListener('change', () => { handleSelections(confirmFeed, feedSelectMenu); });
-  feedDialog.addEventListener('close', () => { sendCareRequest(confirmFeed); });
-  cleanDialog.addEventListener('close', () => { sendCareRequest(confirmClean); });
+  for (const preview of [feedPetPreview, cleanPetPreview]) {
+    preview.addEventListener('dragover', handleDragOver);
+    preview.addEventListener('dragenter', handleDragEnter);
+    preview.addEventListener('dragleave', handleDragLeave);
+    preview.addEventListener('drop', handleDrop);
+  }
+  document.querySelector('#cancelfeed').addEventListener('click', () => {
+    feedPetPreview.classList.remove('over');
+    feedDialog.close();
+  });
+  document.querySelector('#cancelclean').addEventListener('click', () => {
+    cleanPetPreview.classList.remove('over');
+    cleanDialog.close();
+  });
+  // cleanSelectMenu.addEventListener('change', () => { handleSelections(confirmClean, cleanSelectMenu); });
+  // feedSelectMenu.addEventListener('change', () => { handleSelections(confirmFeed, feedSelectMenu); });
   closeButton.addEventListener('click', closeDialog);
+  const items = document.querySelectorAll('.item');
+  for (const elem of items) {
+    elem.addEventListener('dragstart', handleDrag);
+    elem.addEventListener('dragend', handleDragCancel);
+    console.log(elem);
+  }
   setupMemoryGame();
   const shopLink = document.createElement('a');
   const itemRes = await fetch('http://localhost:8080/api/' + accountId + '/items', {

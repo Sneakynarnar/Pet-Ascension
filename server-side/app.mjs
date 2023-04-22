@@ -116,15 +116,22 @@ async function purchaseItemReq(req, res) {
     res.status(404).end('Item not found');
   }
 }
+async function guildPet(req, res) {
+  const account = await PInt.readAccounts(req.params.accountId);
+  if (account === undefined) {
+    res.status(404).send('Account not found');
+  }
+}
 
-function getLeaderboardReq(req, res) {
-  res.json(PInt.getLeaderboard());
+async function getLeaderboardReq(req, res) {
+  const leaderboard = await PInt.getLeaderboard();
+  await res.json(leaderboard);
 }
 app.get('/pets', (req, res) => {
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/pets/index.html'));
 });
-app.get('/leaderboard', () => {
-
+app.get('/leaderboard', (req, res) => {
+  res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/leaderboard/leaderboard.html'));
 });
 app.get('/pets/create', (req, res) => {
   res.sendFile(path.join(path.resolve(__dirname, '..'), '/client-side/createpet/index.html'));
@@ -143,12 +150,14 @@ app.post('/pets/create', express.json(), createPetReq);
 app.post('/api/:accountId/:petName/play', petPlay);
 app.post('/api/:accountId/:petName/care', petCareReq);
 app.post('/pets/:accountId/:petName/sacrifice', sacrificePetReq);
+app.post('/pets/:accountId/:petName/guild');
 app.get('/pets', showAllPets);
 app.get('/pets/:accountId/:petName', showSpecificPet);
+app.get('/api/leaderboard', getLeaderboardReq);
 app.get('/api/:accountId', getAllAccountJson);
 app.get('/api/:accountId/items', getAccountItems);
 app.get('/api/:accountId/:petName', getPetJson);
-app.get('/api/leaderboard', getLeaderboardReq);
+
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

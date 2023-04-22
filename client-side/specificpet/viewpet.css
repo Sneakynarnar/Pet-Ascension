@@ -5,6 +5,9 @@
     max-width: 50em;  
     min-height: 25em;
   }
+  #fooditems, #cleanitems #knifecontainer{
+    position: grid;
+  }
   .petcontainer {
     position: flex;
     justify-content: center;
@@ -13,6 +16,17 @@
     position: relative;
     margin: 0px;
 }
+
+#feedarea, #cleanarea, #killarea {
+  display: flex;
+  
+}
+
+
+.over {
+  border: solid lime 2px
+}
+
 .notpet {
   visibility: hidden;
 }

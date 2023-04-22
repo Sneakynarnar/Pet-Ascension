@@ -1,11 +1,11 @@
 
 
 async function getJson(id) {
-  console.log('in getJson');
   const response = await fetch(`http://localhost:8080/api/${id}`);
   const pets = await response.json();
   console.log(pets);
   return pets;
+  
 }
 async function loadPets(id) {
   console.log('im here');

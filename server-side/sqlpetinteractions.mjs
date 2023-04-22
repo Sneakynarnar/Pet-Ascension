@@ -3,7 +3,7 @@ import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import fs from 'fs/promises';
 const hour = 1000 * 3600;
-const HUNGER_DECAY = 30000;
+const HUNGER_DECAY = 5;
 const CLEANLINESS_DECAY = 5;
 const BASE_NP_RATE = 10000;
 const BASE_LEVEL_BOOST = 10;
@@ -66,14 +66,14 @@ export async function createPet(accountId, petName, type, colors) {
     console.log(`Pet already exists: ${duplicates}`);
     return false;
   }
-  await db.run('INSERT INTO Pets VALUES (:accountId, :petName, :dateCreated, :type, :cleanliness, :happiness, :hunger, :level, :XP, :rank, :last_updated, :last_feed_update, :last_play_update, :last_clean_update, :playCount, :timesPlayed, :timesCleaned, :timesFed, :dead, :diedAt, :colors)', {
+  await db.run('INSERT INTO Pets VALUES (:accountId, :petName, :dateCreated, :type, :cleanliness, :happiness, :hunger, :level, :XP, :rank, :last_updated, :last_feed_update, :last_play_update, :last_clean_update, :playCount, :timesPlayed, :timesCleaned, :timesFed, :dead, :diedAt, :deathReason, :colors)', {
     ':accountId': accountId,
     ':petName': petName,
     ':dateCreated': now,
     ':type': type,
-    ':cleanliness': 100,
-    ':happiness': 100,
-    ':hunger': 100,
+    ':cleanliness': 60,
+    ':happiness': 75,
+    ':hunger': 10,
     ':level': 1,
     ':XP': 0,
     ':rank': 1,
@@ -87,6 +87,7 @@ export async function createPet(accountId, petName, type, colors) {
     ':last_updated': now,
     ':dead': false,
     ':diedAt': null,
+    ':deathReason': null,
     ':colors': colors,
   });
 }
@@ -98,9 +99,9 @@ export async function readAccounts(accountId = null) {
 
   return accounts;
 }
-export async function getLeaderBoard() {
+export async function getLeaderboard() {
   const db = await connect;
-  const petLeaderBoard = await db.all('SELECT * FROM Accounts WHERE dead = false ORDER BY level, EXP DESC');
+  const petLeaderBoard = await db.all('SELECT petName, level, XP, timesPlayed, timesCleaned, timesFed, rank FROM Pets WHERE dead = false ORDER BY level, XP DESC');
   return JSON.stringify({ rows: petLeaderBoard });
 }
 export async function createAccount(accountId) {
@@ -157,11 +158,15 @@ export async function updatePets(accountId) {
     pet.last_updated = now;
     if (pet.hunger <= 0) {
       pet.dead = true;
-      console.log('In here for some reason');
       pet.diedAt = now;
+      pet.deaathReason = 'starvation';
+    } else if (pet.cleanliness && pet.fitness <= 0) {
+      pet.dead = true;
+      pet.diedAt = now;
+      pet.deathReason = 'care';
     }
     console.log(`last updated ${(now - pet.last_updated) / hour} hours ago`);
-    db.run('UPDATE Pets SET hunger = ?, fitness = ?, cleanliness = ?, last_updated = ?, dead = ?, diedAt = ? WHERE accountId = ? AND petName = ?', pet.hunger, pet.fitness, pet.cleanliness, pet.last_updated, pet.dead, pet.diedAt, accountId, pet.petName);
+    db.run('UPDATE Pets SET hunger = ?, fitness = ?, cleanliness = ?, last_updated = ?, dead = ?, diedAt = ?, deathReason = ? WHERE accountId = ? AND petName = ?', pet.hunger, pet.fitness, pet.cleanliness, pet.last_updated, pet.dead, pet.diedAt, pet.deathReason, accountId, pet.petName);
   }
   account.NP += totalNpEarned;
   db.run('UPDATE Accounts SET NP = ? WHERE accountId = ?', account.NP, accountId);
@@ -205,12 +210,20 @@ export async function petCare(itemId, accountId, petName, res) {
   if (lastInteract > hour * cooldown) {
     if (item.type === 0) {
       pet.last_clean_update = Date.now();
-      pet.cleanliness += item.value;
+      if (pet.cleanliness >= 100) {
+        res.status(403).send('Pet is already completely clean!!');
+        return;
+      }
+      pet.cleanliness = pet.cleanliness + item.value > 100 ? 100 : pet.cleanliness + item.value;
       pet.timesCleaned += 1;
       db.run('UPDATE Pets SET last_clean_update = ?, cleanliness = ?, timesCleaned = ? WHERE accountId = ? ', pet.last_clean_update, pet.cleanliness, pet.timesCleaned, accountId);
     } else {
+      if (pet.hunger >= 100) {
+        res.status(403).send('Pet is already completely full!!');
+        return;
+      }
       pet.last_feed_update = Date.now();
-      pet.hunger += item.value;
+      pet.hunger = pet.hunger + item.value > 100 ? 100 : pet.hunger + item.value;
       pet.timesFed += 1;
       db.run('UPDATE Pets SET last_feed_update = ?, hunger = ?, timesFed = ? WHERE accountId = ?', pet.last_feed_update, pet.hunger, pet.timesFed, accountId);
     }
@@ -281,8 +294,34 @@ export async function petSacrifice(accountId, petName) {
   if (items.pet_blood === undefined) {
     items.pet_blood = 1;
   } else {
-    items.pet_blood += 1;
+    items.pet_blood += Math.floor(pet.level / 5) - 2;
   }
   await db.run('UPDATE Accounts SET items = ? WHERE accountId = ?', JSON.stringify(items), accountId);
-  await db.run('UPDATE Pets SET dead = ?', true);
+  await db.run('UPDATE Pets SET dead = ?, diedAt = ?, deathReason = ? WHERE petName = ? AND accountId = ?', true, Date.now(), 'sacrifice', petName, accountId);
+}
+
+export async function petGuild(accountId, petName, res) {
+  const db = await connect;
+  const pet = await getAccountPets(accountId, petName);
+  const account = await readAccounts(accountId);
+  const items = JSON.parse(account.items);
+  if (pet === undefined) {
+    res.status(404).send('Pet not found!');
+    return false;
+  }
+  if (pet.level < 15) {
+    res.status(403).send('Pet not a high enough level!');
+    return false;
+  } else if (pet.rank >= 3) {
+    res.status(403).send('Pet is max guilded.');
+    return false;
+  }
+  if ((items.pet_blood < 3 && pet.rank === 1) || (items.pet_blood < 6 && pet.rank === 2)) {
+    res.status(403).send('Not enough pet blood.');
+    return false;
+  }
+  items.pet_blood = pet.rank === 1 ? items.pet_blood - 3 : items.pet_blood - 6;
+  pet.rank += 1;
+  await db.run('UPDATE Accounts SET items = ? WHERE accountId = ?', JSON.stringify(items), accountId);
+  await db.run('UPDATE Pets SET rank = ? WHERE accountId = ? AND rank = ?', accountId, pet.rank);
 }
