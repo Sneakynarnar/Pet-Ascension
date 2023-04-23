@@ -16,7 +16,9 @@
     position: relative;
     margin: 0px;
 }
-
+.killhighlight {
+  border: solid red 1em
+}
 #feedarea, #cleanarea, #killarea {
   display: flex;
   

@@ -1,3 +1,4 @@
+
 // elements
 const fitnessMeter = document.querySelector('#fitness');
 const happinessMeter = document.querySelector('#happiness');
@@ -41,6 +42,9 @@ const feedMeterPreview = document.querySelector('#hungerpreview');
 const cleanMeterPreview = document.querySelector('#cleanpreview');
 const cleanPetPreview = document.querySelector('#cleanpetpreview');
 const sacrificeDialog = document.querySelector('#sacrificedialog');
+const sacrificePetPreview = document.querySelector('#sacrificepetcontainer');
+const guildDialog = document.querySelector('#guilddialog');
+const guildButton = document.querySelector('#guild');
 let holScore = 0;
 // variables
 let playCom = [];
@@ -75,6 +79,13 @@ async function updateMeters() {
       elem.style = `fill: ${color}; `;
     }
   }
+  const guildColor = petStats.rank === 2 ? '#ff0000' : '#ffffff';
+  if (petStats.rank !== 1) {
+    document.querySelectorAll('.eyes').forEach(elem => {
+      elem.style = `fill: ${guildColor};`
+    });
+  }
+
   if (petStats.dead) {
     level.textContent = `level: Doesn't matter ${petStats.petName} is dead`;
     XPcounter.textContent = '';
@@ -171,8 +182,12 @@ async function petClean() {
   await updateMeters();
   cleanDialog.showModal();
 }
-function sacrificePet() {
-  sacrificeDialog.showModal();
+async function sacrificePet() {
+  if (petStats.level > 15 || true) {
+    document.querySelector('#sacrificestatus').textContent = await sacrificePetReq()
+  } else {
+    document.querySelector('#sacrificestatus').textContent = 'pet not a high enough level';
+  }
 }
 
 
@@ -181,10 +196,19 @@ async function sacrificePetReq() {
     method: 'POST',
   });
   if (response.ok) {
-    console.log(response);
     await updateMeters();
   }
+  return await response.text();
 }
+
+async function guildPetReq() {
+  const response = await fetch('http://localhost:8080/pets/' + apiPath + '/guild', {
+    method: 'POST',
+  })
+  document.querySelector('#guildstatus').textContent = await response.text();
+}
+
+
 async function sendCareRequest(item) {
   const response = await fetch('http://localhost:8080/api/' + apiPath + '/care', {
     method: 'POST',
@@ -373,20 +397,37 @@ function nextCard(nextNumber, currentNumber, correct) {
 }
 function handleDrag(e) {
   // e.preventDefault();
+  console.log(e.target.id);
   e.dataTransfer.setData('text/plain', e.target.id);
+  if (e.target.id === 'knife') {
+    return;
+  }
   const counterElement = document.querySelector(`#${e.target.id}count`);
   counterElement.textContent = Number(counterElement.textContent) - 1;
-  console.log(counterElement);
   e.dataTransfer.effectAllowed = 'copy';
 }
 function handleDragEnter(e) {
+  if (e.currentTarget.id === sacrificePetPreview.id) {
+    sacrificePetPreview.classList.add('killhighlight')
+    return;
+  }
   e.currentTarget.classList.add('over');
 }
 function handleDragLeave(e) {
+  if (e.currentTarget.id === sacrificePetPreview.id) {
+    sacrificePetPreview.classList.remove('killhighlight')
+    
+    
+    return;
+  }
   e.currentTarget.classList.remove('over');
 }
 function handleDragOver(e) {
   e.preventDefault();
+  if (e.currentTarget.id === sacrificePetPreview.id) {
+    sacrificePetPreview.classList.add('killhighlight')
+    return;
+  }
   e.currentTarget.classList.add('over');
   e.dataTransfer.dropEffect = 'copy';
 }
@@ -395,6 +436,10 @@ async function handleDrop(e) {
   e.preventDefault();
   const data = e.dataTransfer.getData('text/plain');
   console.log(data);
+  if (data === 'knife') {
+    await sacrificePet()
+    return;
+  }
   console.log(payload.owned[data]);
   if (payload.owned[data] > 0) {
     const response = await sendCareRequest(data);
@@ -410,7 +455,12 @@ async function handleDrop(e) {
   }
 }
 function handleDragCancel(e) {
-  console.log(e.dataTransfer.dropEffect);
+  e.preventDefault();
+  const data = e.dataTransfer.getData('text/plain');
+  console.log(data);
+  if (data === 'knife') {
+    return;
+  }
   if (e.dataTransfer.dropEffect === 'none') {
     const counterElement = document.querySelector(`#${e.target.id}count`);
     counterElement.textContent = Number(counterElement.textContent) + 1;
@@ -421,11 +471,17 @@ async function main() {
   playButton.addEventListener('click', startRandomGame);
   feedButton.addEventListener('click', petFeed);
   cleanButton.addEventListener('click', petClean);
-  sacrifice.addEventListener('click', sacrificePet);
+  guildButton.addEventListener('click', guildPetReq)
+  document.querySelector('#guildpetbutton').addEventListener('click', () => {
+    document.querySelector('#guilddialog').showModal()
+  })
+  sacrifice.addEventListener('click', () => {
+    sacrificeDialog.showModal()
+  });
   higher.addEventListener('click', guess);
   lower.addEventListener('click', guess);
   holclose.addEventListener('click', closeHolDialog);
-  for (const preview of [feedPetPreview, cleanPetPreview]) {
+  for (const preview of [feedPetPreview, cleanPetPreview, sacrificePetPreview]) {
     preview.addEventListener('dragover', handleDragOver);
     preview.addEventListener('dragenter', handleDragEnter);
     preview.addEventListener('dragleave', handleDragLeave);
@@ -439,6 +495,12 @@ async function main() {
     cleanPetPreview.classList.remove('over');
     cleanDialog.close();
   });
+  document.querySelector('#sacrificecancel').addEventListener('click', () => {
+    sacrificeDialog.close();
+  })
+  document.querySelector('#guildcancel').addEventListener('click', () => {
+    guildDialog.close();
+  })
   // cleanSelectMenu.addEventListener('change', () => { handleSelections(confirmClean, cleanSelectMenu); });
   // feedSelectMenu.addEventListener('change', () => { handleSelections(confirmFeed, feedSelectMenu); });
   closeButton.addEventListener('click', closeDialog);

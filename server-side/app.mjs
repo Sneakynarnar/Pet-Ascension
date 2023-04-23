@@ -62,16 +62,11 @@ async function showSpecificPet(req, res) {
 }
 function sacrificePetReq(req, res) {
   const account = PInt.readAccounts(req.params.accountId);
-  const pet = PInt.getAccountPets(req.params.accountId, req.params.petName);
+  const pet = PInt.getAccountPets(req.params.accountId, req.params.petName,);
   if (account === undefined || pet === undefined) {
     res.status(404).send('Account / Pet not found');
   }
-  const status = PInt.petSacrifice(req.params.accountId, req.params.petName);
-  if (!status) {
-    res.status(403).send('Cannot sacrifice pet!');
-  } else {
-    res.status(200).send('Pet sacrificed!');
-  }
+  PInt.petSacrifice(req.params.accountId, req.params.petName, res);
 }
 async function getPetJson(req, res) {
   res.set('Content-Type', 'application/json');
@@ -120,6 +115,8 @@ async function guildPet(req, res) {
   const account = await PInt.readAccounts(req.params.accountId);
   if (account === undefined) {
     res.status(404).send('Account not found');
+  } else {
+    await PInt.guildPet(req.params.accountId, req.params.petName, res);
   }
 }
 
@@ -150,7 +147,7 @@ app.post('/pets/create', express.json(), createPetReq);
 app.post('/api/:accountId/:petName/play', petPlay);
 app.post('/api/:accountId/:petName/care', petCareReq);
 app.post('/pets/:accountId/:petName/sacrifice', sacrificePetReq);
-app.post('/pets/:accountId/:petName/guild');
+app.post('/pets/:accountId/:petName/guild', guildPet);
 app.get('/pets', showAllPets);
 app.get('/pets/:accountId/:petName', showSpecificPet);
 app.get('/api/leaderboard', getLeaderboardReq);
@@ -162,3 +159,4 @@ app.get('/api/:accountId/:petName', getPetJson);
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
+
