@@ -9,160 +9,10 @@
     <title id="title"></title>
 </head>
 <body>
-    <h1 id="petname"></h1>
+    <h1 id="petname" class="title"></h1>
     <p id="NP"></p>
-    <section class="petcontainer">
-      <svg width="200" height="200" class="animal bunny notpet" id="bunnypre">
-        <g id="main">
-            <rect class="prebunnybody" x="60" y="20" width="80" height="150" stroke="black" stroke-width="3" style="fill:#EEEEEE"/>
-            <rect class="prebunnybelly"x="78" y="110" width="44" height="55" style="fill:pink"/>
-        </g>
-        <g id="bunnypreears">
-            <polygon class="prebunnyears" points="60,20 30,20, 30,100" stroke="black" stroke-width="3"/>
-            <polygon class="prebunnyears" points="140,20 170,20, 170,100" stroke="black" stroke-width="3"/>
-        </g>
-    
-        <g id="face">
-    
-            <polygon class="prebunnynose" points="100,69 85,48 115,48" fill="#e26bFF" stroke="black" stroke-width="3"/>
-            <polyline class="prebunnybody" points="70,68  78,78  120,78 128,68" fill="#EEEEEE" stroke="black" stroke-width="3"/>
-            <line x1="100" y1="68" x2="100" y2="78"  stroke="black" stroke-width="3"/>
-            <circle cx="90" cy="40" r="4" class='eyes'/>
-            <circle cx="110" cy="40" r="4" class='eyes'/>
-            <rect x="90", y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
-            <rect x="100", y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
-        </g>
-        <g id="legs">
-            <rect class="prebunnybody" x="40" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
-            <rect class="prebunnybody" x="140" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
-            <rect class="prebunnybody" x="80" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#EEEEEE"/>
-            <rect class="prebunnybody" x="100" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#EEEEEE"/>
-            <g id="claws">
-                <polygon class="prebunnyclaws" points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
-                <polygon class="prebunnyclaws" points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
-                <polygon class="prebunnyclaws" points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
-                <polygon class="prebunnyclaws" points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
-    
-                <polygon class="prebunnyclaws" points="84,180, 84,175 86,173 88,175, 88,180" stroke="black"/>
-                <polygon class="prebunnyclaws" points="92,180, 92,175 94,173 96,175, 96,180" stroke="black"/>
-                <polygon class="prebunnyclaws" points="104,180, 104,175 106,173 108,175, 108,180" stroke="black"/>
-                <polygon class="prebunnyclaws" points="112,180, 112,175 114,173 116,175, 116,180" stroke="black"/>
-            </g>
-        </g>
-    
-    </svg>
-    <svg width="200" height="200" class="animal cat notpet" id="catpre">
-
-        <g id="main">
-            <polygon class="precatbody" points="60,20 80,40 120,40 140,20 140,170 60,170" stroke="black" stroke-width="3" fill="#CCCCCC"/>
-        </g>
-        <g id="face">
-            <polygon class="precatnose" points="100,80 90,65 110,65" fill="#e26bFF" stroke="black" stroke-width="3"/>
-            <polyline class="precatbody" points="70,85  78,95  120,95 128,85" fill="#CCCCCC" stroke="black" stroke-width="3"/>
-            <line x1="103" y1="95" x2="100" y2="80"  stroke="black" stroke-width="3"/>
-            <circle cx="80" cy="60" r="4" class='eyes'/>
-            <circle cx="120" cy="60" r="4" class='eyes'/>
-        </g>
-        
-        <g id="legs">
-        
-            <rect x="40" y="140" width="20" height="30" stroke="black" stroke-width="3" class="precatbody"fill="#CCCCCC"/>
-            <rect x="140" y="140" width="20" height="30" stroke="black" stroke-width="3" class="precatbody" fill="#CCCCCC"/>
-            <rect x="70" y="160" width="20" height="20" stroke="black" stroke-width="3" class="precatbody"fill="#CCCCCC"/>
-            <rect x="110" y="160" width="20" height="20" stroke="black" stroke-width="3" class="precatbody" fill="#CCCCCC"/>
-            <polygon class="precatclaws" points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
-            <polygon class="precatclaws" points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
-            <polygon class="precatclaws" points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
-            <polygon class="precatclaws" points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
-        
-            <polygon class="precatclaws" points="74,180, 74,175 76,173 78,175, 78,180" stroke="black"/>
-            <polygon class="precatclaws" points="82,180, 82,175 84,173 86,175, 86,180" stroke="black"/>
-            <polygon class="precatclaws" points="114,180, 114,175 116,173 118,175, 118,180" stroke="black"/>
-            <polygon class="precatclaws" points="122,180, 122,175 124,173 126,175, 126,180" stroke="black"/>
-        </g>
-        </svg>
-    <svg width="200", height="200" class="animal dog notpet" id="dogpre">
-        <!-- reference: https://www.pinterest.ca/pin/62276407321827635/ -->
-        <g id="dog" stroke-width="3" stroke="black">
-        <!--60, 20-->
-            <rect x="60" y="20" class="predogbody" width="80" height="150" stroke="black" stroke-width="3" style="fill:#e26b09; " />
-    
-            <g id="dogpreears" class="dogears">
-                <polygon class="predogears" points="60,20 30,20, 30,80" stroke="black" stroke-width="3"/>
-                <polygon class="predogears" points="140,20 170,20, 170,80" stroke="black" stroke-width="3"/>
-            </g>
-            <g id="legs" class="dogbody">
-                <rect x="40" y="130" class="predogbody" width="20" height="40" stroke="black" stroke-width="3" fill="#e26b09"/>
-                <rect x="140" y="130" class="predogbody" width="20" height="40" stroke="black" stroke-width="3" fill="#e26b09"/>
-                <rect x="70" y="150" class="predogbody" width="20" height="30" stroke="black" stroke-width="3" fill="#e26b09"/>
-                <rect x="110" y="150" class="predogbody" width="20" height="30" stroke="black" stroke-width="3" fill="#e26b09"/>
-                <g id="claws">
-                    <polygon class="predogclaws" points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
-                    <polygon class="predogclaws" points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
-                    <polygon class="predogclaws" points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
-                    <polygon class="predogclaws" points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
-    
-                    <polygon class="predogclaws" points="74,180, 74,175 76,173 78,175, 78,180" stroke="black"/>
-                    <polygon class="predogclaws" points="82,180, 82,175 84,173 86,175, 86,180" stroke="black"/>
-                    <polygon class="predogclaws" points="114,180, 114,175 116,173 118,175, 118,180" stroke="black"/>
-                    <polygon class="predogclaws" points="122,180, 122,175 124,173 126,175, 126,180" stroke="black"/>
-                </g>
-            </g>
-            <g id="face">
-                <rect x="89" y="45" class="predognose" width="23" height="15" stroke="black" stroke-width="3" fill="#e26bff"/>
-                <circle cx="80" cy="40" r="4" class='eyes'/>
-                <circle cx="120" cy="40" r="4" class='eyes'/>
-                <polyline points="70,65  78,75  120,75 128,65 "class="predogbody" fill="#e26b09" stroke="black" stroke-width="3"/>
-                <line x1="103" y1="75" x2="99" y2="60"  stroke="black" stroke-width="3"/>
-            </g>
-        </g>
-    </svg>
-    </section>
-    <meter id="hunger" max="100" min="0">Hunger</meter>
-    <meter id="cleanliness" max="100" min="0">Cleanliness</meter>
-    <meter id="fitness" max="100" min="0">Fitness</meter>
-    <meter id="happiness" max="100" min="0">Hapiness</meter>
-    <button id="feed">Feed</button>
-    <button id="clean">Clean</button>
-    <button id="play">Play</button>
-    <button id="sacrifice" disabled='true'>SACRIFICE!!!</button>
-    <p id="level"></p>
-    <p id="exp"></p>
-    <button id="guildpetbutton">Guild your pet!</button>
-    <section id="deathstatscontainer">
-    <p id="deathstats"></p>
-    <section id="linkcontainer"></section>
-    </section>
-    <dialog id="feeddialog">
-        <section id="feedarea">
-        <section id="fooditems">
-            <div id="donut" class='item' draggable="true">
-                <svg xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="70", cy="70", r="50" style="stroke: #ffd675; fill: #ffd675; stroke-width: 45px"/>
-                    <path stroke="pink" d="M 20 30, C 34 14 19 1 80 10, C 90 10 100 4 115 33, C 150 90 120 50 135 80, C 115 150 60 130 30 120, C 0 70 1 68 20 30" style="fill: pink"/>
-                    <circle cx="70", cy="70" r="32" style="fill: white"/>
-                </svg>
-                <p id="donutcount" class="itemcounter"></p>
-            </div>
-            
-            <div id="superdonut" class='item' draggable="true">
-                <svg xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="70", cy="70", r="50" style="stroke: #ffd675; fill: #ffd675; stroke-width: 45px"/>
-                    <path stroke= "lime" d="M 20 30, C 34 14 19 1 80 10, C 90 10 100 4 115 33, C 150 90 120 50 135 80, C 115 150 60 130 30 120, C 0 70 1 68 20 30" style="fill: lime"/>
-                    <circle cx="70", cy="70" r="32" style="fill: white"/>
-                </svg>
-                <p id="superdonutcount" class="itemcounter"></p>
-            </div>
-            <div id="ultradonut" class='item' draggable="true">
-                <svg  xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="70", cy="70", r="50" style="stroke: #ffd675; fill: #ffd675; stroke-width: 45px"/>
-                    <path stroke="violet" d="M 20 30, C 34 14 19 1 80 10, C 90 10 100 4 115 33, C 150 90 120 50 135 80, C 115 150 60 130 30 120, C 0 70 1 68 20 30" style="fill: violet"/>
-                    <circle cx="70", cy="70" r="32" style="fill: white"/>
-                </svg>
-                <p id="ultradonutcount" class="itemcounter"></p>
-            </div>
-        </section>
-        <section id ="feedpetpreview" class="petcontainer">
+    <section class="petpreview">
+        <div class="petcontainer">
             <svg width="200" height="200" class="animal bunny notpet" id="bunnypre">
                 <g id="main">
                     <rect class="prebunnybody" x="60" y="20" width="80" height="150" stroke="black" stroke-width="3" style="fill:#EEEEEE"/>
@@ -203,7 +53,7 @@
             
             </svg>
             <svg width="200" height="200" class="animal cat notpet" id="catpre">
-        
+
                 <g id="main">
                     <polygon class="precatbody" points="60,20 80,40 120,40 140,20 140,170 60,170" stroke="black" stroke-width="3" fill="#CCCCCC"/>
                 </g>
@@ -231,18 +81,18 @@
                     <polygon class="precatclaws" points="114,180, 114,175 116,173 118,175, 118,180" stroke="black"/>
                     <polygon class="precatclaws" points="122,180, 122,175 124,173 126,175, 126,180" stroke="black"/>
                 </g>
-                </svg>
+            </svg>
             <svg width="200", height="200" class="animal dog notpet" id="dogpre">
                 <!-- reference: https://www.pinterest.ca/pin/62276407321827635/ -->
                 <g id="dog" stroke-width="3" stroke="black">
                 <!--60, 20-->
                     <rect x="60" y="20" class="predogbody" width="80" height="150" stroke="black" stroke-width="3" style="fill:#e26b09; " />
             
-                    <g id="dogpreears">
+                    <g id="dogpreears" class="dogears">
                         <polygon class="predogears" points="60,20 30,20, 30,80" stroke="black" stroke-width="3"/>
                         <polygon class="predogears" points="140,20 170,20, 170,80" stroke="black" stroke-width="3"/>
                     </g>
-                    <g id="legs">
+                    <g id="legs" class="dogbody">
                         <rect x="40" y="130" class="predogbody" width="20" height="40" stroke="black" stroke-width="3" fill="#e26b09"/>
                         <rect x="140" y="130" class="predogbody" width="20" height="40" stroke="black" stroke-width="3" fill="#e26b09"/>
                         <rect x="70" y="150" class="predogbody" width="20" height="30" stroke="black" stroke-width="3" fill="#e26b09"/>
@@ -268,7 +118,180 @@
                     </g>
                 </g>
             </svg>
+        </div>
+    
+        <section class="stats">
+            <div class="meters">
+                <div class="stat">
+                    <label for="hunger">Hunger</label>
+                    <meter id="hunger" max="100" min="0">Hunger</meter>
+                </div>
+                <div class="stat">
+                    <label for="cleanliness">Cleanliness</label>
+                    <meter id="cleanliness" max="100" min="0">Cleanliness</meter>
+                </div>
+                <div class="stat">
+                    <label for="fitness">fitness</label>
+                    <meter id="fitness" max="100" min="0">Fitness</meter>
+                </div>
+                <div class="stat">
+                    <label for="happiness">Happiness</label>
+                    <meter id="happiness" max="100" min="0">Hapiness</meter>
+                </div>
+            </div>
         </section>
+    </section>
+    <section class="stats">
+        <div class="actionbuttons">
+            <button id="feed">Feed</button>
+            <button id="clean">Clean</button>
+            <button id="play">Play</button>
+        </div>
+        <button id="sacrifice" disabled='true'>SACRIFICE!!!</button>
+    </section>
+    <p id="level"></p>
+    <p id="exp"></p>
+    <button id="guildpetbutton">Guild your pet!</button>
+    <section id="deathstatscontainer">
+    <p id="deathstats"></p>
+    <section id="linkcontainer"></section>
+    </section>
+    <dialog id="feeddialog">
+        <section id="feedarea">
+        <section id="fooditems">
+                <div id="donut" class='item' draggable="true">
+                    <svg xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="70", cy="70", r="50" style="stroke: #ffd675; fill: #ffd675; stroke-width: 45px"/>
+                        <path stroke="pink" d="M 20 30, C 34 14 19 1 80 10, C 90 10 100 4 115 33, C 150 90 120 50 135 80, C 115 150 60 130 30 120, C 0 70 1 68 20 30" style="fill: pink"/>
+                        <circle cx="70", cy="70" r="32" style="fill: white"/>
+                    </svg>
+                    <p id="donutcount" class="itemcounter"></p>
+                </div>
+                
+                <div id="superdonut" class='item' draggable="true">
+                    <svg xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="70", cy="70", r="50" style="stroke: #ffd675; fill: #ffd675; stroke-width: 45px"/>
+                        <path stroke= "lime" d="M 20 30, C 34 14 19 1 80 10, C 90 10 100 4 115 33, C 150 90 120 50 135 80, C 115 150 60 130 30 120, C 0 70 1 68 20 30" style="fill: lime"/>
+                        <circle cx="70", cy="70" r="32" style="fill: white"/>
+                    </svg>
+                    <p id="superdonutcount" class="itemcounter"></p>
+                </div>
+                <div id="ultradonut" class='item' draggable="true">
+                    <svg  xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="70", cy="70", r="50" style="stroke: #ffd675; fill: #ffd675; stroke-width: 45px"/>
+                        <path stroke="violet" d="M 20 30, C 34 14 19 1 80 10, C 90 10 100 4 115 33, C 150 90 120 50 135 80, C 115 150 60 130 30 120, C 0 70 1 68 20 30" style="fill: violet"/>
+                        <circle cx="70", cy="70" r="32" style="fill: white"/>
+                    </svg>
+                    <p id="ultradonutcount" class="itemcounter"></p>
+                </div>
+            </section>
+            <section id ="feedpetpreview" class="petcontainer">
+                <svg width="200" height="200" class="animal bunny notpet" id="bunnypre">
+                    <g id="main">
+                        <rect class="prebunnybody" x="60" y="20" width="80" height="150" stroke="black" stroke-width="3" style="fill:#EEEEEE"/>
+                        <rect class="prebunnybelly"x="78" y="110" width="44" height="55" style="fill:pink"/>
+                    </g>
+                    <g id="bunnypreears">
+                        <polygon class="prebunnyears" points="60,20 30,20, 30,100" stroke="black" stroke-width="3"/>
+                        <polygon class="prebunnyears" points="140,20 170,20, 170,100" stroke="black" stroke-width="3"/>
+                    </g>
+                
+                    <g id="face">
+                
+                        <polygon class="prebunnynose" points="100,69 85,48 115,48" fill="#e26bFF" stroke="black" stroke-width="3"/>
+                        <polyline class="prebunnybody" points="70,68  78,78  120,78 128,68" fill="#EEEEEE" stroke="black" stroke-width="3"/>
+                        <line x1="100" y1="68" x2="100" y2="78"  stroke="black" stroke-width="3"/>
+                        <circle cx="90" cy="40" r="4" class='eyes'/>
+                        <circle cx="110" cy="40" r="4" class='eyes'/>
+                        <rect x="90", y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
+                        <rect x="100", y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
+                    </g>
+                    <g id="legs">
+                        <rect class="prebunnybody" x="40" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
+                        <rect class="prebunnybody" x="140" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
+                        <rect class="prebunnybody" x="80" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#EEEEEE"/>
+                        <rect class="prebunnybody" x="100" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#EEEEEE"/>
+                        <g id="claws">
+                            <polygon class="prebunnyclaws" points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
+                            <polygon class="prebunnyclaws" points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
+                            <polygon class="prebunnyclaws" points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
+                            <polygon class="prebunnyclaws" points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
+                
+                            <polygon class="prebunnyclaws" points="84,180, 84,175 86,173 88,175, 88,180" stroke="black"/>
+                            <polygon class="prebunnyclaws" points="92,180, 92,175 94,173 96,175, 96,180" stroke="black"/>
+                            <polygon class="prebunnyclaws" points="104,180, 104,175 106,173 108,175, 108,180" stroke="black"/>
+                            <polygon class="prebunnyclaws" points="112,180, 112,175 114,173 116,175, 116,180" stroke="black"/>
+                        </g>
+                    </g>
+                
+                </svg>
+                <svg width="200" height="200" class="animal cat notpet" id="catpre">
+            
+                    <g id="main">
+                        <polygon class="precatbody" points="60,20 80,40 120,40 140,20 140,170 60,170" stroke="black" stroke-width="3" fill="#CCCCCC"/>
+                    </g>
+                    <g id="face">
+                        <polygon class="precatnose" points="100,80 90,65 110,65" fill="#e26bFF" stroke="black" stroke-width="3"/>
+                        <polyline class="precatbody" points="70,85  78,95  120,95 128,85" fill="#CCCCCC" stroke="black" stroke-width="3"/>
+                        <line x1="103" y1="95" x2="100" y2="80"  stroke="black" stroke-width="3"/>
+                        <circle cx="80" cy="60" r="4" class='eyes'/>
+                        <circle cx="120" cy="60" r="4" class='eyes'/>
+                    </g>
+                    
+                    <g id="legs">
+                    
+                        <rect x="40" y="140" width="20" height="30" stroke="black" stroke-width="3" class="precatbody"fill="#CCCCCC"/>
+                        <rect x="140" y="140" width="20" height="30" stroke="black" stroke-width="3" class="precatbody" fill="#CCCCCC"/>
+                        <rect x="70" y="160" width="20" height="20" stroke="black" stroke-width="3" class="precatbody"fill="#CCCCCC"/>
+                        <rect x="110" y="160" width="20" height="20" stroke="black" stroke-width="3" class="precatbody" fill="#CCCCCC"/>
+                        <polygon class="precatclaws" points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
+                        <polygon class="precatclaws" points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
+                        <polygon class="precatclaws" points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
+                        <polygon class="precatclaws" points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
+                    
+                        <polygon class="precatclaws" points="74,180, 74,175 76,173 78,175, 78,180" stroke="black"/>
+                        <polygon class="precatclaws" points="82,180, 82,175 84,173 86,175, 86,180" stroke="black"/>
+                        <polygon class="precatclaws" points="114,180, 114,175 116,173 118,175, 118,180" stroke="black"/>
+                        <polygon class="precatclaws" points="122,180, 122,175 124,173 126,175, 126,180" stroke="black"/>
+                    </g>
+                    </svg>
+                <svg width="200", height="200" class="animal dog notpet" id="dogpre">
+                    <!-- reference: https://www.pinterest.ca/pin/62276407321827635/ -->
+                    <g id="dog" stroke-width="3" stroke="black">
+                    <!--60, 20-->
+                        <rect x="60" y="20" class="predogbody" width="80" height="150" stroke="black" stroke-width="3" style="fill:#e26b09; " />
+                
+                        <g id="dogpreears">
+                            <polygon class="predogears" points="60,20 30,20, 30,80" stroke="black" stroke-width="3"/>
+                            <polygon class="predogears" points="140,20 170,20, 170,80" stroke="black" stroke-width="3"/>
+                        </g>
+                        <g id="legs">
+                            <rect x="40" y="130" class="predogbody" width="20" height="40" stroke="black" stroke-width="3" fill="#e26b09"/>
+                            <rect x="140" y="130" class="predogbody" width="20" height="40" stroke="black" stroke-width="3" fill="#e26b09"/>
+                            <rect x="70" y="150" class="predogbody" width="20" height="30" stroke="black" stroke-width="3" fill="#e26b09"/>
+                            <rect x="110" y="150" class="predogbody" width="20" height="30" stroke="black" stroke-width="3" fill="#e26b09"/>
+                            <g id="claws">
+                                <polygon class="predogclaws" points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
+                                <polygon class="predogclaws" points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
+                                <polygon class="predogclaws" points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
+                                <polygon class="predogclaws" points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
+                
+                                <polygon class="predogclaws" points="74,180, 74,175 76,173 78,175, 78,180" stroke="black"/>
+                                <polygon class="predogclaws" points="82,180, 82,175 84,173 86,175, 86,180" stroke="black"/>
+                                <polygon class="predogclaws" points="114,180, 114,175 116,173 118,175, 118,180" stroke="black"/>
+                                <polygon class="predogclaws" points="122,180, 122,175 124,173 126,175, 126,180" stroke="black"/>
+                            </g>
+                        </g>
+                        <g id="face">
+                            <rect x="89" y="45" class="predognose" width="23" height="15" stroke="black" stroke-width="3" fill="#e26bff"/>
+                            <circle cx="80" cy="40" r="4" class='eyes'/>
+                            <circle cx="120" cy="40" r="4" class='eyes'/>
+                            <polyline points="70,65  78,75  120,75 128,65 "class="predogbody" fill="#e26b09" stroke="black" stroke-width="3"/>
+                            <line x1="103" y1="75" x2="99" y2="60"  stroke="black" stroke-width="3"/>
+                        </g>
+                    </g>
+                </svg>
+            </section>
     </section>
     <meter id="hungerpreview" max="100" min="0">Hunger</meter>
     <button id="cancelfeed" class="canceldialog" value="cancel">Not now.</button>

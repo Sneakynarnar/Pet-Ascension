@@ -1,21 +1,47 @@
 
 
-  #gamedialog {
-    min-width: 30em;
-    max-width: 50em;  
-    min-height: 25em;
-  }
-  #fooditems, #cleanitems #knifecontainer{
-    position: grid;
-  }
-  .petcontainer {
-    position: flex;
-    justify-content: center;
-    width: 200px;
-    height: 200px;
-    position: relative;
-    margin: 0px;
+
+.title {
+  font-family: Tahoma;
+  font-size: 2em;
+  color: white;
+  text-align: center
 }
+#NP {
+  display: none;
+  color: white;
+  text-align: center;
+  font-family: 'Trebuchet MS';
+}
+
+#gamedialog {
+  min-width: 30em;
+  max-width: 50em;  
+  min-height: 25em;
+}
+#fooditems, #cleanitems #knifecontainer {
+  position: grid;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.petpreview {
+  display: flex;
+  justify-content: center;
+}
+.petcontainer {
+  flex-direction: row;
+  align-self: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  margin: 0px;
+}
+
 .killhighlight {
   border: solid red 1em
 }
@@ -30,31 +56,31 @@
 }
 
 .notpet {
-  visibility: hidden;
+  display: none;
 }
 
 .animal {
     width: 100%;
     height: 100%;
-    position: absolute;
+    /* position: absolute; */
     top: 0;
     left: 0;
 }
 
 
-  .wrongend {
-    background-color: red;
-    border: red dashed
-  }
-  .memoryspace {
-    min-width: 5em;
-    padding: 0em;
-    margin: 0em
-  }
+.wrongend {
+  background-color: red;
+  border: red dashed
+}
+.memoryspace {
+  min-width: 5em;
+  padding: 0em;
+  margin: 0em
+}
 
-  #memorygamecontainer {
-    display: flex;  
-  }
+#memorygamecontainer {
+  display: flex;  
+}
 
 .wrong {
 
@@ -129,6 +155,7 @@
 }
 
 
+
 .back {
   margin: 0;
   padding: 0;
@@ -140,4 +167,7 @@
 /*   justify-content: center;
   align-items: center; */
 /*   gap: 5rem; */
+}
+body {
+  background-color: #372f41;
 }

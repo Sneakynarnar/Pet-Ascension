@@ -16,8 +16,14 @@
   text-align: center;
   font-size: 5em;
   cursor: pointer;
-  
-
+}
+.petcontainer {
+  position: flex;
+  justify-content: center;
+  width: 500px;
+  height: 500px;
+  position: relative;
+  margin: 0px;
 }
 .pettitle {
   font-family: Tahoma;

@@ -60,17 +60,19 @@ let payload;
 async function updateMeters() {
   const response = await fetch('http://localhost:8080/api/' + apiPath);
   petStats = await response.json();
-  level.textContent = `level: ${petStats.level}`;
   if (petStats.level < 15) {
     sacrifice.disabled = false;
   }
-  XPcounter.textContent = `${petStats.XP}/10000`;
 
   for (const elem of document.querySelectorAll(`#${petStats.type}pre`)) {
     elem.classList.remove('notpet');
   }
+
+  level.textContent = `level: ${petStats.level}`;
   NPamount.textContent = `NP: ${petStats.NP}`;
   petNameTitle.textContent = petName;
+  XPcounter.textContent = `${petStats.XP}/10000`;
+
   let colorelements;
   petStats.colors = JSON.parse(petStats.colors);
   for (const [part, color] of Object.entries(petStats.colors)) {
@@ -79,6 +81,7 @@ async function updateMeters() {
       elem.style = `fill: ${color}; `;
     }
   }
+
   const guildColor = petStats.rank === 2 ? '#ff0000' : '#ffffff';
   if (petStats.rank !== 1) {
     document.querySelectorAll('.eyes').forEach(elem => {
