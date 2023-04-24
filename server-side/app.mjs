@@ -40,10 +40,11 @@ async function getAccountItems(req, res) {
   if (account === undefined) {
     res.status(404).end('Account not found.');
   } else {
-    res.json({
+    const data = {
       owned: account.items,
       info: ITEMS,
-    });
+    };
+    res.json(JSON.stringify(data));
   }
 }
 function showAllPets(req, res) {
@@ -85,8 +86,9 @@ async function getAllAccountJson(req, res) {
   res.set('Content-Type', 'application/json');
   const accountId = req.params.accountId;
   let account = await PInt.readAccounts(accountId);
+  console.log(req.body);
   if (account === undefined) {
-    account = PInt.createAccount(accountId);
+    account = PInt.createAccount(accountId, req.body.accountName);
   }
   const pets = await PInt.getAccountPets(accountId);
   account.pets = pets;
@@ -149,10 +151,10 @@ app.post('/api/:accountId/:petName/play', petPlay);
 app.post('/api/:accountId/:petName/care', petCareReq);
 app.post('/pets/:accountId/:petName/sacrifice', sacrificePetReq);
 app.post('/pets/:accountId/:petName/guild', guildPet);
+app.post('/api/:accountId', express.json(), getAllAccountJson);
 app.get('/pets', showAllPets);
 app.get('/pets/:accountId/:petName', showSpecificPet);
 app.get('/api/leaderboard', getLeaderboardReq);
-app.get('/api/:accountId', getAllAccountJson);
 app.get('/api/:accountId/items', getAccountItems);
 app.get('/api/:accountId/:petName', getPetJson);
 

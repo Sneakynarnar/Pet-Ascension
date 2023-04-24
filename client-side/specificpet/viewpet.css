@@ -7,14 +7,27 @@
   color: white;
   text-align: center
 }
+.dialogtitle {
+  font-family: Tahoma;
+  font-size: 2em;
+  color: white;
+}
 #NP {
   display: none;
   color: white;
   text-align: center;
   font-family: 'Trebuchet MS';
 }
+
+.statussuccess {
+  color: rgb(16, 212, 16);
+}
+.statusfaliure {
+  color: red;
+}
 dialog {
-  zoom: 70%;
+  zoom: 50%;
+  background-color: #4f4959;
 }
 .item {
   background-color: transparent;
@@ -23,7 +36,21 @@ dialog {
   display: flex;
   flex-direction: column;
 }
+.xplevel {
+  padding-top: 3em;
+}
 
+#level, #exp {
+
+  color: white;
+  text-align: center;
+  font-family: 'Trebuchet MS';
+}
+
+.gametext {
+  color: white;
+  font-family: 'Trebuchet MS';
+}
 .meterlabel {
   color: white;
   text-align: center;
@@ -37,16 +64,84 @@ dialog {
 #fooditems, #cleanitems #knifecontainer {
   position: grid;
 }
-
+/* .actonbuttons {
+  display: flex;
+  flex-direction: row;
+} */
+.actionbutton {
+  background-color: rgb(98, 0, 255);
+  border-radius: 1em;
+  color: white;
+  display: flex;
+  width:5em;
+  justify-content: center;
+  box-shadow: rgba(0, 0, 0, 0.8) 0px 8px 25px -15px;
+  padding: 0.5em;
+  border: 0;
+  white-space: nowrap;
+}
+.closebutton {
+  background-color: rgb(149, 160, 147);
+  border-radius: 1em;
+  color: white;
+  display: flex;
+  width:9em;
+  justify-content: center;
+  box-shadow: rgba(0, 0, 0, 0.8) 0px 8px 25px -15px;
+  padding: 0.5em;
+  border: 0;
+  white-space: nowrap;
+}
+.closebutton:hover {
+  background-color: rgb(195, 202, 194);
+}
+.dangerbutton {
+  background-color: rgb(179, 33, 33);
+  border-radius: 1em;
+  color: white;
+  display: flex;
+  width:9em;
+  justify-content: center;
+  box-shadow: rgba(0, 0, 0, 0.8) 0px 8px 25px -15px;
+  padding: 0.5em;
+  border: 0;
+  white-space: nowrap;
+}
+.dangerbutton:hover {
+  background-color: rgb(255, 68, 106);
+}
+.actionbutton:hover {
+  background-color: #5900ff;
+}
 .stats {
   display: flex;
-  flex-direction: column;
+  gap: 0.5em;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
 }
-.petpreview {
+.ascending {
   display: flex;
   justify-content: center;
+  margin-top: 2em;
+  gap: 2em;
+}
+.itemcounter {
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 3em;
+  margin: 0;
+  transform: translate(7vw, -3vw)
+}
+.item {
+
+ 
+}
+.petpreview {
+  display: flex;
+  gap: 3em;
+  justify-content: center;
+  
 }
 .petcontainer {
   flex-direction: row;
@@ -58,7 +153,7 @@ dialog {
 }
 
 .killhighlight {
-  border: solid red 1em
+  border: solid red 0.5em
 }
 #feedarea, #cleanarea, #killarea {
   display: flex;
@@ -81,11 +176,27 @@ dialog {
     top: 0;
     left: 0;
 }
-
-
+.guildpetinfo {
+  align-items: center;
+}
+.petblood {
+  transform: translate(0, 0.5em);
+  
+}
+.guildtitle {
+  color: rgb(156, 14, 14);
+  font-size: 3.5em;
+}
 .wrongend {
   background-color: red;
   border: red dashed
+}
+.npcolor {
+  color: gold;
+}
+.guildbuttons {
+  display: flex;
+  gap: 1em;
 }
 .memoryspace {
   min-width: 5em;
@@ -120,7 +231,11 @@ dialog {
   display: flex;
   
 }
- 
+.guildinfotext {
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 2em;
+}
 
 .maincontainer {
   margin: 0;
@@ -184,6 +299,6 @@ dialog {
 /*   gap: 5rem; */
 }
 body {
-  zoom: 160%;
+  zoom: 220%;
   background-color: #372f41;
 }

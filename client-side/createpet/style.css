@@ -8,6 +8,12 @@
     font-family: 'Trebuchet MS';
   
   }
+
+h1, p {
+    color: white;
+    text-align: center;
+    font-family: 'Trebuchet MS';
+}
 html {
     scroll-behavior:smooth;
 }

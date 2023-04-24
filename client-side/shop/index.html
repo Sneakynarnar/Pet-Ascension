@@ -5,16 +5,82 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PA shop</title>
+    <link rel="stylesheet" href="style.css">
     <script defer src="index.js"></script>
 </head>
 <body>
-    <h1>SHOP</h1>
-    <p id="npindicator"></p>
+    <h1 class="title">Shop</h1>
+    <p class="npcounter"></p>
     <section id="PA shop">
-        <h2>Food items</h2>
-        <section id="feeding"></section>
-        <h2>Cleaning items</h2>
-        <section id="cleaning"></section>
+        <section id="feeding" class="itemcontainer">
+            <div id="donut" class='item'>
+                <div class="itemsvg">
+                    <svg xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="70", cy="70", r="50" style="stroke: #ffd675; fill: #ffd675; stroke-width: 45px"/>
+                        <path stroke="pink" d="M 20 30, C 34 14 19 1 80 10, C 90 10 100 4 115 33, C 150 90 120 50 135 80, C 115 150 60 130 30 120, C 0 70 1 68 20 30" style="fill: pink"/>
+                        <circle cx="70", cy="70" r="32" style="fill: white"/>
+                    </svg>
+                </div>
+                <div class="itemdetails">
+                    <p id ="donutinfo" class="iteminfo"></p>
+                    <p id="donutcount" class="itemcounter"></p>
+                </div>
+            </div>
+            
+            <div id="superdonut" class='item'>
+                <svg xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="70", cy="70", r="50" style="stroke: #ffd675; fill: #ffd675; stroke-width: 45px"/>
+                    <path stroke= "lime" d="M 20 30, C 34 14 19 1 80 10, C 90 10 100 4 115 33, C 150 90 120 50 135 80, C 115 150 60 130 30 120, C 0 70 1 68 20 30" style="fill: lime"/>
+                    <circle cx="70", cy="70" r="32" style="fill: white"/>
+                </svg>
+                <div class="itemdetails">
+                    <p id ="superdonutinfo" class="iteminfo"></p>
+                    <p id="superdonutcount" class="itemcounter"></p>
+                </div>
+            </div>
+            <div id="ultradonut" class='item'>
+                <svg  xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="70", cy="70", r="50" style="stroke: #ffd675; fill: #ffd675; stroke-width: 45px"/>
+                    <path stroke="violet" d="M 20 30, C 34 14 19 1 80 10, C 90 10 100 4 115 33, C 150 90 120 50 135 80, C 115 150 60 130 30 120, C 0 70 1 68 20 30" style="fill: violet"/>
+                    <circle cx="70", cy="70" r="32" style="fill: white"/>
+                </svg>
+                <div class="itemdetails">
+                    <p id ="ultradonutinfo" class="iteminfo"></p>
+                    <p id="ultradonutcount" class="itemcounter"></p>
+                </div>
+            </div>
+        </section>
+        <section id="cleaning" class="itemcontainer">
+            <div id="soap" class="item" class='item'>
+                <svg xmlns="http://www.w3.org/2000/svg">
+                    <rect x="30", y="30" width="100" height="50" rx="20" style='fill: pink'/>
+                    <rect x="45", y="40" width="70" height="30" rx="20" style="stroke: rgb(224, 118, 224); stroke-width: 5px; fill: rgb(224, 118, 224)"/>
+                </svg>
+                <div class="itemdetails">
+                    <p id ="soapinfo" class="iteminfo"></p>
+                    <p id="soapcount" class="itemcounter"></p>
+                </div>
+            </div>
+            <div id="supersoap" class="item" class='item'>
+                <svg xmlns="http://www.w3.org/2000/svg">
+                    <rect x="30", y="30" width="100" height="50" rx="20" style='fill: rgb(133, 238, 131)'/>
+                    <rect x="45", y="40" width="70" height="30" rx="20" style="stroke: rgb(0, 255, 8); stroke-width: 5px; fill: rgb(0, 255, 8)"/>
+                </svg>
+                <div class="itemdetails">
+                    <p id ="supersoapinfo" class="iteminfo"></p>
+                    <p id="supersoapcount" class="itemcounter"></p>
+                </div>
+            </div>
+            <div id="ultrasoap" class='item'>
+                <svg xmlns="http://www.w3.org/2000/svg">
+                    <rect x="30", y="30" width="100" height="50" rx="20" style='fill: rgb(231, 221, 21)'/>
+                    <rect x="45", y="40" width="70" height="30" rx="20" style="stroke: rgb(241, 181, 27); stroke-width: 5px; fill: rgb(241, 181, 27)"/>
+                </svg>
+                <div class="itemdetails">
+                    <p id ="ultrasoapinfo" class="iteminfo"></p>
+                    <p id="ultrasoapcount" class="itemcounter"></p>
+                </div>
+        </section>
     </section>
     
 </body>

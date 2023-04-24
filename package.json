@@ -2,14 +2,18 @@
   "dependencies": {
     "express": "^4.18.2",
     "open": "^8.4.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "sqlite": "^4.1.2",
+    "sqlite3": "^5.1.6"
   },
   "scripts": {
     "start": "node server-side/app.mjs",
+    "setup": "node server-side/setup.mjs",
     "db": "nodemon server-side/app.mjs"
   },
   "devDependencies": {
     "elint": "^2.0.1",
+    "eslint": "^8.39.0",
     "eslint-config-portsoc": "^1.0.1"
   },
   "eslintConfig": {

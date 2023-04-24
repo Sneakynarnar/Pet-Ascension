@@ -12,6 +12,11 @@
     <h1 id="petname" class="title"></h1>
     <p id="NP"></p>
     <section class="petpreview">
+        
+        <div class="xplevel">
+            <p id="level"></p>
+            <p id="exp"></p>
+        </div>
         <div class="petcontainer">
             <svg width="200" height="200" class="animal bunny notpet" id="bunnypre">
                 <g id="main">
@@ -142,19 +147,17 @@
         </section>
     </section>
     <section class="stats">
-        <div class="actionbuttons">
-            <button id="feed">Feed</button>
-            <button id="clean">Clean</button>
-            <button id="play">Play</button>
-        </div>
-        <button id="sacrifice" disabled='true'>SACRIFICE!!!</button>
+        <button id="feed" class="actionbutton">Feed</button>
+        <button id="clean" class="actionbutton">Clean</button>
+        <button id="play" class="actionbutton">Play</button>
+        <button id="shop" class="actionbutton">Shop</button>
     </section>
-    <p id="level"></p>
-    <p id="exp"></p>
-    <button id="guildpetbutton">Guild your pet!</button>
+    <section class="ascending">
+        <button id="guildpetbutton" class="dangerbutton">Ascend your pet!</button>
+        <button id="sacrifice" class="dangerbutton" disabled='true'>SACRIFICE!!!</button>
+    </section>
     <section id="deathstatscontainer">
-    <p id="deathstats"></p>
-    <section id="linkcontainer"></section>
+        <p id="deathstats" class="gametext"></p>
     </section>
     <dialog id="feeddialog">
         <section id="feedarea">
@@ -294,38 +297,32 @@
                 </section>
         </section>
     <meter id="hungerpreview" max="100" min="0">Hunger</meter>
-    <button id="cancelfeed" class="canceldialog" value="cancel">Not now.</button>
+    <button id="cancelfeed" class="cancelbutton canceldialog" value="cancel">Not now.</button>
     </dialog>
 
     <dialog id="cleandialog">
         <section id="cleanarea">
             <section id="cleanitems">
-                <div id="soapcontainer" >
-                    <div id="soap" class="itemcontainer" class='item' draggable="true">
-                        <svg xmlns="http://www.w3.org/2000/svg">
-                            <rect x="30", y="30" width="100" height="50" rx="20" style='fill: pink'/>
-                            <rect x="45", y="40" width="70" height="30" rx="20" style="stroke: rgb(224, 118, 224); stroke-width: 5px; fill: rgb(224, 118, 224)"/>
-                        </svg>
-                        <p id="soapcount" class="itemcounter"></p>
-                    </div>
+                <div id="soap" class="item" class='item' draggable="true">
+                    <svg xmlns="http://www.w3.org/2000/svg">
+                        <rect x="30", y="30" width="100" height="50" rx="20" style='fill: pink'/>
+                        <rect x="45", y="40" width="70" height="30" rx="20" style="stroke: rgb(224, 118, 224); stroke-width: 5px; fill: rgb(224, 118, 224)"/>
+                    </svg>
+                    <p id="soapcount" class="itemcounter"></p>
                 </div>
-                <div>
-                    <div id="supersoap" class="itemcontainer" class='item' draggable="true">
-                        <svg xmlns="http://www.w3.org/2000/svg">
-                            <rect x="30", y="30" width="100" height="50" rx="20" style='fill: rgb(133, 238, 131)'/>
-                            <rect x="45", y="40" width="70" height="30" rx="20" style="stroke: rgb(0, 255, 8); stroke-width: 5px; fill: rgb(0, 255, 8)"/>
-                        </svg>
-                        <p id="supersoapcount" class="itemcounter"></p>
-                    </div>
+                <div id="supersoap" class="item" class='item' draggable="true">
+                    <svg xmlns="http://www.w3.org/2000/svg">
+                        <rect x="30", y="30" width="100" height="50" rx="20" style='fill: rgb(133, 238, 131)'/>
+                        <rect x="45", y="40" width="70" height="30" rx="20" style="stroke: rgb(0, 255, 8); stroke-width: 5px; fill: rgb(0, 255, 8)"/>
+                    </svg>
+                    <p id="supersoapcount" class="itemcounter"></p>
                 </div>
-                <div>
-                    <div id="ultrasoap" id="ultrasoapcontainer" class='item' draggable="true">
-                        <svg xmlns="http://www.w3.org/2000/svg">
-                            <rect x="30", y="30" width="100" height="50" rx="20" style='fill: rgb(231, 221, 21)'/>
-                            <rect x="45", y="40" width="70" height="30" rx="20" style="stroke: rgb(241, 181, 27); stroke-width: 5px; fill: rgb(241, 181, 27)"/>
-                        </svg>
-                        <p id="ultrasoapcount" class="itemcounter"></p>
-                    </div>
+                <div id="ultrasoap" class='item' draggable="true">
+                    <svg xmlns="http://www.w3.org/2000/svg">
+                        <rect x="30", y="30" width="100" height="50" rx="20" style='fill: rgb(231, 221, 21)'/>
+                        <rect x="45", y="40" width="70" height="30" rx="20" style="stroke: rgb(241, 181, 27); stroke-width: 5px; fill: rgb(241, 181, 27)"/>
+                    </svg>
+                    <p id="ultrasoapcount" class="itemcounter"></p>
                 </div>
             </section>
             <section id="cleanpetpreview" class="petcontainer">
@@ -437,7 +434,7 @@
             </section>
         </section>
         <meter id="cleanpreview" max="100" min="0">Cleanliness</meter>
-        <button id="cancelclean" class="canceldialog" value="cancel">Not now.</button>
+        <button id="cancelclean" class="cancelbutton canceldialog" value="cancel">Not now.</button>
     </dialog>
     <dialog id="memorygamedialog">
         <h2>Pet Memory!</h2>
@@ -554,11 +551,11 @@
             </div>  
         </section>
         <p id="boost"></p>
-        <button id="memoryclose">Close</button>
+        <button id="memoryclose" class="closebutton">Close</button>
     </dialog>
     <dialog id="holgamedialog">
-        <h2>Pet Higher or Lower!</h2>
-        <p>Guess if the next card your pet draws will be higher or lower than their current card</p>
+        <h2 class="dialogtitle">Pet Higher or Lower!</h2>
+        <p class="gametext">Guess if the next card your pet draws will be higher or lower than their current card</p>
         <section id="holcontainer">
             <section class="petcontainer">
             <svg width="200" height="200" class="animal bunny notpet" id="bunnypre">
@@ -708,16 +705,17 @@
               </div>
             </div>
           </div>
-        <p id="holscore">0</p>
+        
         
         </section>
+        <p class="gametext" id="holscore">0</p>
         <p id="holboost"></p>
         <button id="higher">Higher!</button>
         <button id="lower">Lower!</button>
-        <button id="holclose" class="hide">Done!</button>
+        <button id="holclose" class="hide closebutton">Done!</button>
     </dialog>
     <dialog id="sacrificedialog">
-        <p>You know what to do... what is done cannot be undone.</p>
+        <p id="gainblood" class="guildinfotext">You know what to do... what is done cannot be undone. (Drag the knife to sacrifice your pet for </p>
         <section id="killarea"> 
             <div id="knifecontainer" class="item", draggable="true">
                 <img src="/itemsvgs/knife.png" id="knife" height="200" width="200" >
@@ -833,11 +831,13 @@
         
         </section>
         <p id="sacrificestatus"></p>
-        <button id="sacrificecancel">No! I CAN'T DO IT</button>
+        <button id="sacrificecancel" class="closebutton">No! I CAN'T DO IT</button>
     </dialog>
     <dialog id="guilddialog">
-        <h2>Pet guilding</h2>
-        <p id="guildpetinfo">Guild your pet.</p>
+        <h2 class="guildtitle">Pet guilding</h2>
+            <p id="guildpetinfo" class="guildinfotext">Guild your pet. This will cost 2000 NP and</p>
+            <p id="guildpb" class="guildinfotext"></p>
+            <p id="guildnp" class="guildinfotext"></p>
             <div id="guildpetcontainer", class="petcontainer">
                 <svg width="200" height="200" class="animal bunny notpet" id="bunnypre">
                     <g id="main">
@@ -948,8 +948,10 @@
         
         </section>
         <p id="guildstatus"></p>
-        <button id="guild">Guild it.</button>
-        <button id="guildcancel">Not now</button>
+        <div class="guildbuttons">
+            <button id="guild" class="actionbutton">Ascend.</button>
+            <button id="guildcancel" class="closebutton">Not now</button>
+        </div>
     </dialog>
 </body>
 </html>

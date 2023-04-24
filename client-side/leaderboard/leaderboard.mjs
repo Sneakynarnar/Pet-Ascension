@@ -8,7 +8,10 @@ async function main() {
   let counter = 1;
   let tablerow;
   let tabledata;
-  for (const row of leaderboard.rows) {
+  let row;
+  for (let i = leaderboard.rows.length - 1; i >= 0; i--) {
+    row = leaderboard.rows[i];
+    console.log(i, row);
     tablerow = document.createElement('tr');
     tablerow.id = `place_${counter}`;
     tabledata = document.createElement('td');

@@ -2,7 +2,13 @@ let data;
 let accessToken;
 let authType;
 async function getJson(id) {
-  const response = await fetch(`http://localhost:8080/api/${id}`);
+  console.log(data.username);
+  const response = await fetch(`http://localhost:8080/api/${id}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ accountName: data.username }),
+
+  });
   const pets = await response.json();
   console.log(pets);
   return pets;
@@ -40,13 +46,6 @@ async function loadPets(id) {
   const account = await getJson(id);
   const pets = account.pets;
   console.log(pets);
-
-  if (Object.entries(pets).length === 0) {
-    const noPets = document.querySelector('#noPets');
-    const frag = new URLSearchParams(window.location.hash.slice(1));
-    const [accessToken, authType] = [frag.get('access_token'), frag.get('token_type')];
-    noPets.innerHTML = `It seems like you haven't creates any pets <a href="http://localhost:8080/pets/create/#token_type=${authType}&access_token=${accessToken}">Click here!</a> to create your pet`;
-  }
   const parser = new DOMParser();
   let svgText;
   let colorelements;
@@ -141,6 +140,8 @@ async function main() {
 
   });
   data = await response.json();
+  console.log(data);
+
   console.log(data.id);
   await loadPets(data.id);
 }

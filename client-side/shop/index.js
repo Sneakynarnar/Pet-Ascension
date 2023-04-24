@@ -1,11 +1,9 @@
 const accountId = window.location.pathname.slice(-18);
-const feedingSection = document.querySelector('#feeding');
-const cleaningSection = document.querySelector('#cleaning');
-const NP = document.querySelector('#npindicator');
+const NP = document.querySelector('.npcounter');
 let shop;
 
 async function buyItem(e) {
-  const response = await fetch('http://localhost:8080/shop/' + accountId + '/' + e.target.id.slice(0, -3), {
+  const response = await fetch('http://localhost:8080/shop/' + accountId + '/' + e.currentTarget.id, {
     method: 'POST',
   });
   if (response.ok) {
@@ -20,55 +18,53 @@ async function buyItem(e) {
 
 function loadShop(payload) {
   shop = payload.shop;
-  const account = payload.account;
-  NP.textContent = `NP: ${account.NP}`;
-  const feedingList = document.createElement('ul');
-  const cleaningList = document.createElement('ul');
-  let item;
+  console.log(payload);
+  NP.innerHTML = `NP: <span class="np">${payload.account.NP}</span>`;
+  const owned = JSON.parse(payload.account.items);
+  console.log(typeof payload.account.items);
+  let info;
+  let count;
+
   for (const [k, v] of Object.entries(shop)) {
-    item = document.createElement('li');
-    item.id = k;
-    item.textContent = `${v.name}: ${v.cost} NP`;
-    if (account.items[k] !== undefined) {
-      item.textContent += ` (You own ${account.items[k]}.)`;
+    if (k === 'pet_blood') { continue; }
+    info = document.querySelector('#' + k + 'info');
+    count = document.querySelector('#' + k + 'count');
+    if (owned[k] !== undefined) {
+      count.textContent = `You have: ${owned[k]}`;
     }
-    item.innerHTML += ` <button id ="${k}buy">Buy!</button>`;
-    switch (v.type) {
-      case 0:
-        cleaningList.appendChild(item);
-        break;
-      case 1:
-        feedingList.appendChild(item);
-        break;
-    }
+    info.textContent = `${shop[k].name} | ${v.cost} NP`;
   }
-  cleaningSection.appendChild(cleaningList);
-  feedingSection.appendChild(feedingList);
 }
+
 function updateShop(account) {
-  NP.textContent = `NP: ${account.NP}`;
-  let item;
-  //console.log(shop);
+  NP.innerHTML = `NP: <span class="np">${account.NP}</span>`;
+  const owned = account.items;
+  let info;
+  let count;
   for (const [k, v] of Object.entries(shop)) {
-    item = document.querySelector(`#${k}`);
-    item.textContent = `${v.name}: ${v.cost} NP`;
-    if (account.items[k] !== undefined) {
-      item.textContent += ` (You own ${account.items[k]}.)`;
+    if (k === 'pet_blood') { continue; }
+    info = document.querySelector('#' + k + 'info');
+    count = document.querySelector('#' + k + 'count');
+    if (owned[k] !== undefined) {
+      count.textContent = `You have: ${owned[k]}`;
     }
-    item.innerHTML += ` <button id ="${k}buy">Buy!</button>`;
+    info.textContent = `${shop[k].name}\n ${v.cost} NP`;
   }
 }
 function addListeners() {
   for (const [k] of Object.entries(shop)) {
-    const button = document.querySelector(`#${k}buy`);
-    button.addEventListener('click', buyItem);
+    const svg = document.querySelector(`#${k}`);
+    svg.addEventListener('click', buyItem);
   }
 }
 
 async function main() {
   const response = await fetch('http://localhost:8080/shop/' + accountId + '/items');
-  const payload = await response.json();
-  loadShop(payload);
+  const payload = await response.text();
+  console.log(payload);
+  const data = JSON.parse(payload);
+  console.log(data);
+  loadShop(data);
   addListeners();
 }
 window.addEventListener('load', main);

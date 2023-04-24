@@ -52,7 +52,7 @@ let combination = [];
 let gamelevel = 1;
 let playing = false;
 const MAX_HOL_NUMBER = 9;
-const petName = window.location.pathname.slice(25);
+let petName = window.location.pathname.slice(25);
 const accountId = window.location.pathname.slice(6, 24);
 const apiPath = window.location.pathname.slice(6);
 let petStats;
@@ -60,7 +60,7 @@ let payload;
 async function updateMeters() {
   const response = await fetch('http://localhost:8080/api/' + apiPath);
   petStats = await response.json();
-  if (petStats.level < 15) {
+  if (petStats.level > 15) {
     sacrifice.disabled = false;
   }
 
@@ -70,6 +70,13 @@ async function updateMeters() {
 
   level.textContent = `level: ${petStats.level}`;
   NPamount.textContent = `NP: ${petStats.NP}`;
+  const petNameList = petName.split('');
+  petNameList[0] = petNameList[0].toUpperCase();
+  petName = '';
+
+  for (const letter of petNameList) {
+    petName += letter;
+  }
   petNameTitle.textContent = petName;
   XPcounter.textContent = `${petStats.XP}/10000`;
 
@@ -96,6 +103,7 @@ async function updateMeters() {
     playButton.disabled = true;
     feedButton.disabled = true;
     sacrifice.disabled = true;
+    document.querySelector('#guildpetbutton').disabled = true;
     console.log(`Number: ${petStats.diedAt}`);
     const timeAliveWordified = wordifyTimeInMilliseconds(Number(petStats.diedAt) - Number(petStats.dateCreated));
     deathStats.textContent = `Level reached: ${petStats.level}\n Lived for: ${timeAliveWordified}\nGuild level: ${petStats.rank}\nTimes fed: ${petStats.timesFed}\nTimes cleaned: ${petStats.timesCleaned}\nTimes played: ${petStats.timesPlayed}`;
@@ -208,7 +216,15 @@ async function guildPetReq() {
   const response = await fetch('http://localhost:8080/pets/' + apiPath + '/guild', {
     method: 'POST',
   });
-  document.querySelector('#guildstatus').textContent = await response.text();
+  const status = document.querySelector('#guildstatus');
+  if (response.ok) {
+    status.classList.add('statussuccess');
+    status.classList.remove('statusfaliure');
+  } else {
+    status.classList.remove('statussuccess');
+    status.classList.add('statusfaliure');
+  }
+  status.textContent = await response.text();
 }
 
 
@@ -468,18 +484,39 @@ function handleDragCancel(e) {
     counterElement.textContent = Number(counterElement.textContent) + 1;
   }
 }
+async function getPetBloodIcon() {
+  const response = await fetch('/itemsvgs/pet_blood.svg');
+  return await response.text();
+}
+async function handleGuilding() {
+  const cost = petStats.rank === 1 ? 3 : 6;
+  const svgText = await getPetBloodIcon();
+  document.querySelector('#guildpetinfo').innerHTML = `Guild your pet. This will cost 2000 NP and ${cost} ${svgText}.`;
+  document.querySelector('#guildnp').innerHTML = `NP: <span class="npcolor">${petStats.NP}</span>`;
+  const petBlood = payload.owned.pet_blood !== null ? payload.owned.pet_blood : 0;
+  document.querySelector('#guildpb').innerHTML = `${svgText}: ${petBlood}`;
+  document.querySelector('#guilddialog').showModal();
+}
+async function handleSacrifice() {
+  console.log('clicked');
+  
+  const svgText = await getPetBloodIcon();
+  const amount = Math.round((petStats.level / 5) - 2);
+  const blood = amount > 0 ? amount : 0;
+  document.querySelector('#gainblood').innerHTML = ` You know what to do... what is done cannot be undone. (Drag the knife to sacrifice your pet for ${blood} ${svgText})`;
+  sacrificeDialog.showModal();
+}
 async function main() {
   await updateMeters();
   playButton.addEventListener('click', startRandomGame);
   feedButton.addEventListener('click', petFeed);
   cleanButton.addEventListener('click', petClean);
   guildButton.addEventListener('click', guildPetReq);
-  document.querySelector('#guildpetbutton').addEventListener('click', () => {
-    document.querySelector('#guilddialog').showModal();
+  document.querySelector('#shop').addEventListener('click', () => {
+    window.location.href = 'http://localhost:8080/' + 'shop' + window.location.pathname.slice(5, 24);
   });
-  sacrifice.addEventListener('click', () => {
-    sacrificeDialog.showModal();
-  });
+  document.querySelector('#guildpetbutton').addEventListener('click', handleGuilding);
+  sacrifice.addEventListener('click', handleSacrifice);
   higher.addEventListener('click', guess);
   lower.addEventListener('click', guess);
   holclose.addEventListener('click', closeHolDialog);
@@ -489,19 +526,23 @@ async function main() {
     preview.addEventListener('dragleave', handleDragLeave);
     preview.addEventListener('drop', handleDrop);
   }
-  document.querySelector('#cancelfeed').addEventListener('click', () => {
+  document.querySelector('#cancelfeed').addEventListener('click', async () => {
     feedPetPreview.classList.remove('over');
     feedDialog.close();
+    await updateMeters();
   });
-  document.querySelector('#cancelclean').addEventListener('click', () => {
+  document.querySelector('#cancelclean').addEventListener('click', async () => {
     cleanPetPreview.classList.remove('over');
     cleanDialog.close();
+    await updateMeters();
   });
-  document.querySelector('#sacrificecancel').addEventListener('click', () => {
+  document.querySelector('#sacrificecancel').addEventListener('click', async () => {
     sacrificeDialog.close();
+    await updateMeters();
   });
-  document.querySelector('#guildcancel').addEventListener('click', () => {
+  document.querySelector('#guildcancel').addEventListener('click', async () => {
     guildDialog.close();
+    await updateMeters();
   });
   // cleanSelectMenu.addEventListener('change', () => { handleSelections(confirmClean, cleanSelectMenu); });
   // feedSelectMenu.addEventListener('change', () => { handleSelections(confirmFeed, feedSelectMenu); });
@@ -513,14 +554,12 @@ async function main() {
     console.log(elem);
   }
   setupMemoryGame();
-  const shopLink = document.createElement('a');
   const itemRes = await fetch('http://localhost:8080/api/' + accountId + '/items', {
     method: 'GET',
   });
   payload = await itemRes.json();
+  payload = JSON.parse(payload);
+  console.log(payload.owned);
   payload.owned = JSON.parse(payload.owned);
-  shopLink.href = 'http://localhost:8080/' + 'shop' + window.location.pathname.slice(5, 24);
-  shopLink.textContent = 'Go to the shop!';
-  linkContainer.appendChild(shopLink);
 }
 window.addEventListener('load', main);
