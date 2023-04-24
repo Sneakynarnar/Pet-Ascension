@@ -13,7 +13,22 @@
   text-align: center;
   font-family: 'Trebuchet MS';
 }
+dialog {
+  zoom: 70%;
+}
+.item {
+  background-color: transparent;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+}
 
+.meterlabel {
+  color: white;
+  text-align: center;
+  font-family: 'Trebuchet MS'; 
+}
 #gamedialog {
   min-width: 30em;
   max-width: 50em;  
@@ -169,5 +184,6 @@
 /*   gap: 5rem; */
 }
 body {
+  zoom: 160%;
   background-color: #372f41;
 }
