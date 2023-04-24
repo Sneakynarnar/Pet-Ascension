@@ -5,16 +5,16 @@ import fs from 'fs/promises';
 const hour = 1000 * 3600;
 const HUNGER_DECAY = 5;
 const CLEANLINESS_DECAY = 5;
-const BASE_NP_RATE = 10000;
+const BASE_NP_RATE = 10;
 const BASE_LEVEL_BOOST = 10;
 const FITNESS_DECAY = 5;
 const BASE_HAPPINESS_POINTS = 20;
 const MIN_SACRIFICE_LEVEL = 15;
 const ALLOWED_PLAYS_PER_SESSION = 3;
-const PLAY_BASE_XP = 100000;
-const PLAY_COOLDOWN_HOURS = 1 / 360;
-const FEED_COOLDOWN_HOURS = 1 / 360;
-const CLEAN_COOLDOWN_HOURS = 1 / 360;
+const PLAY_BASE_XP = 500;
+const PLAY_COOLDOWN_HOURS = 5;
+const FEED_COOLDOWN_HOURS = 2;
+const CLEAN_COOLDOWN_HOURS = 2;
 const XP_PER_LEVEL = 10000;
 const FEED_XP = 250;
 const CLEAN_XP = 250;
@@ -334,6 +334,11 @@ export async function guildPet(accountId, petName, res) {
     res.status(404).send('Pet not found!');
     return false;
   }
+  if (account.NP < 2000) {
+    res.status(403).send('Not enough NP');
+    return false;
+  }
+  account.NP -= 2000;
   if (pet.level < 15) {
     res.status(403).send('Pet not a high enough level!');
     return false;
@@ -348,6 +353,6 @@ export async function guildPet(accountId, petName, res) {
   items.pet_blood = pet.rank === 1 ? items.pet_blood - 3 : items.pet_blood - 6;
   pet.rank += 1;
   res.status(200).send(`Rank increased to ${pet.rank}`);
-  await db.run('UPDATE Accounts SET items = ? WHERE accountId = ?', JSON.stringify(items), accountId);
+  await db.run('UPDATE Accounts SET items = ?, NP WHERE accountId = ?', JSON.stringify(items), account.NP, accountId);
   await db.run('UPDATE Pets SET rank = ? WHERE accountId = ? AND petName = ?', pet.rank, accountId, petName);
 }
