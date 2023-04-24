@@ -75,5 +75,14 @@ I drastically overestimated how much I needed to work on this project, there are
 /api/:accountId/:petName
 
 ```
+## POST ##
 
+```
+/shop/:accountId/:item
+/api/:accountId/:petName/play
+/api/:accountId/:petName/care
+/pets/:accountId/:petName/sacrifice
+/pets/:accountId/:petName/guild
+/pets/create
+```
 Enjoy :)
