@@ -48,6 +48,7 @@ I drastically overestimated how much I needed to work on this project, there are
 - On the higher or lower, the game completely breaks if the viewport width gets too small
 - Feeding and Cleaning behave weirdly when the user has no items, including the counter going to -1 when the donut is dragged
 - Alot of pages break if the viewport width is too small, and would be unsuitable for mobile devices.
+- I forgot to put some sort of message when a pet is too tired to play or eat or smthn, because I always had that feature off and forgot that I needed to put some sort of recognition why the request was being denied. Realised this 20 mins ago when I turned back up the constants (it is 10 40pm as of writing this);
 
 ### Coding habits ###
 
