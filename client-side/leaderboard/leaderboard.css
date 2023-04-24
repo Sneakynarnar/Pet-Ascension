@@ -1,0 +1,30 @@
+
+body {
+  background-color: #372f41;
+}
+.lbcontainer {
+  display: flex;
+  justify-content: center;
+}
+h1 {
+  font-family: Tahoma;
+  font-size: 2em;
+  color: white;
+  text-align: center;
+}
+table {
+  border: 2px solid #555;
+  border-collapse: collapse;
+  font: 16px "Lucida Grande", "Helvetica", "Arial", sans-serif;
+  color: white;
+}
+tbody {
+  display: table-row-group;
+  vertical-align: middle;
+}
+th,
+td {
+  border: 1px solid #bbb;
+  padding: 2px 8px 0;
+  text-align: left;
+}

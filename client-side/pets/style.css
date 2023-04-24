@@ -1,0 +1,53 @@
+
+
+#petlist, #deadpetlist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  padding-bottom: 1em
+}
+#createpet {
+  border: 5px solid;
+  width: 200px;
+  padding: 10px;
+  cursor: pointer;
+}
+#createpetbutton {
+  text-align: center;
+  font-size: 5em;
+  cursor: pointer;
+  
+
+}
+.pettitle {
+  font-family: Tahoma;
+  font-size: 2em;
+  color: white;
+}
+
+.deathmessage {
+
+  font-family: Tahoma;
+  color: black;
+}
+#createpet:hover {
+  background-color: #8d7ba3;
+}
+.animalpreview {
+  border: solid black 2px;
+  cursor: pointer;
+}
+
+.animalpreview:hover {
+  background-color: #8d7ba3;
+}
+.title {
+  color: white;
+  text-align: center;
+  font-family: 'Trebuchet MS';
+
+}
+body {
+  background-color: #372f41;
+}
+

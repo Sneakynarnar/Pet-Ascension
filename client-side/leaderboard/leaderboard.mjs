@@ -4,7 +4,7 @@ async function main() {
   const response = await fetch('http://localhost:8080/api/leaderboard');
   const payload = await response.json();
   const leaderboard = JSON.parse(payload);
-  console.log(leaderboard);
+  console.log(JSON.stringify(leaderboard));
   let counter = 1;
   let tablerow;
   let tabledata;

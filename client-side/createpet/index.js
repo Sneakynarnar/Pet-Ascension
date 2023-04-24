@@ -9,7 +9,8 @@ const bodycolor = document.querySelector('#body');
 const clawcolor = document.querySelector('#claws');
 const bellycolor = document.querySelector('#belly');
 const earcolor = document.querySelector('#ears');
-
+let accessToken;
+let authType;
 function inputHandler(e) {
   const name = e.target.value;
   const allowedCharacters = 'qwertyuiopasdfghjklzxcvbnm1234567890';
@@ -33,9 +34,17 @@ function inputHandler(e) {
 async function createPetRequest(e, discordId) {
   if (selectedAnimal === null) {
     invalidText.textContent = 'You have not selected an animal type!';
+    window.location.href = '#top';
     return;
+  } else if (inputBox.value === '') {
+    window.location.href = '#top';
+    invalidText.textContent = 'You have not named your pet!';
   } else {
     invalidText.textContent = '';
+  }
+  if (submit.disabled) {
+    console.log('blocked');
+    return;
   }
   const petJson = {
     id: discordId,
@@ -49,15 +58,19 @@ async function createPetRequest(e, discordId) {
       body: bodycolor.value,
     },
   };
-  console.log(petJson);
+  console.log('fetching..');
+
   const response = await fetch('http://localhost:8080/pets/create', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(petJson),
   });
+  console.log('is this even being ran?');
   if (response.ok) {
-    window.location = `http://localhost:8080/pets/${discordId}/` + petJson.name;
+    window.location.href = `http://localhost:8080/pets/${discordId}/` + petJson.name + `#token_type=${authType}&access_token=${accessToken}`;
     console.log('done');
+  } else {
+    invalidText.textContent = await response.text();
   }
 }
 
@@ -80,19 +93,17 @@ function selectAnimal(e) {
   document.querySelector('#catpre').classList.add('notpreviewed');
   document.querySelector('#bunnypre').classList.add('notpreviewed');
   console.log(e.target.parentElement.parentElement.classList);
-  if (e.target.parentElement?.classList?.contains('animal')) {
-    e.target.classList.add('selected');
-  } else {
-    document.querySelector('#' + e.target.parentElement.parentElement.classList.item(1)).classList.add('selected');
-  }
-  selectedAnimal = e.target?.id === '' ? e.target.parentElement.parentElement.classList.item(1) : e.target.id;
+  e.currentTarget.classList.add('selected');
+  selectedAnimal = e.currentTarget.classList.item(1);
+  console.log(`selected (${selectedAnimal})`);
   if (selectedAnimal === 'bunny') {
     nosecolor.disabled = false;
     bodycolor.disabled = false;
     clawcolor.disabled = false;
     bellycolor.disabled = false;
     earcolor.disabled = false;
-  } if (selectedAnimal === 'cat') {
+    console.log(bellycolor.disabled);
+  } else if (selectedAnimal === 'cat') {
     nosecolor.disabled = false;
     bodycolor.disabled = false;
     clawcolor.disabled = false;
@@ -105,12 +116,11 @@ function selectAnimal(e) {
     bellycolor.disabled = true;
     earcolor.disabled = false;
   }
-  console.log(selectedAnimal);
   document.querySelector(`#${selectedAnimal}pre`).classList.remove('notpreviewed');
 }
 async function main() {
   const frag = new URLSearchParams(window.location.hash.slice(1));
-  const [accessToken, authType] = [frag.get('access_token'), frag.get('token_type')];
+  [accessToken, authType] = [frag.get('access_token'), frag.get('token_type')];
   if (accessToken === null) {
     window.location.href = 'http://localhost:8080/';
   }
@@ -122,6 +132,7 @@ async function main() {
 
   });
   const data = await response.json();
+  document.querySelector('#topets').href = `http://localhost:8080/pets#token_type=${authType}&access_token=${accessToken}`;
   document.querySelector('#petname').addEventListener('input', inputHandler);
   for (const picker of colorPickers) {
     picker.addEventListener('change', handleColorChange);

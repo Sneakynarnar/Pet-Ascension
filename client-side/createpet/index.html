@@ -11,129 +11,124 @@
     <script defer src="/createpet/index.js"></script>
 </head>
 
-<h1>Pet Ascension</h1>
-
-<p>Welcome to pet ascenscion, insert explanation text here where I explain things in a short way</p>
-
-
-
-
+<h1 class="title">Pet Creation</h1>
+<p id="invalidText"></p>
 
 <style>
     .dogbody {
         fill: "#e26b09"
     }
 </style>
+<div class="petchoices">
+    <svg width="200", height="200" class="animal dog" id="dog">
+        <!-- reference: https://www.pinterest.ca/pin/62276407321827635/ -->
+        <g id="dog" stroke-width="3" stroke="black">
+        <!--60, 20-->
+            <rect x="60" y="20" width="80" height="150" stroke="black" stroke-width="3" style="fill:#e26b09; " />
 
-<svg width="200", height="200" class="animal dog" id="dog">
-    <!-- reference: https://www.pinterest.ca/pin/62276407321827635/ -->
-    <g id="dog" stroke-width="3" stroke="black">
-    <!--60, 20-->
-        <rect x="60" y="20" width="80" height="150" stroke="black" stroke-width="3" style="fill:#e26b09; " />
+            <g id="dogears">
+                <polygon class="dog" points="60,20 30,20, 30,80" stroke="black" stroke-width="3"/>
+                <polygon class="dog" points="140,20 170,20, 170,80" stroke="black" stroke-width="3"/>
+            </g>
+            <g id="legs">
+                <rect class="dog" x="40" y="130" width="20" height="40" stroke="black" stroke-width="3" fill="#e26b09"/>
+                <rect class="dog" x="140" y="130" width="20" height="40" stroke="black" stroke-width="3" fill="#e26b09"/>
+                <rect x="70" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#e26b09"/>
+                <rect class="dog" x="110" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#e26b09"/>
+                <g id="claws">
+                    <polygon class="dog" points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
+                    <polygon class="dog" points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
+                    <polygon class="dog" points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
+                    <polygon class="dog" points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
 
-        <g id="dogears">
-            <polygon class="dog" points="60,20 30,20, 30,80" stroke="black" stroke-width="3"/>
-            <polygon class="dog" points="140,20 170,20, 170,80" stroke="black" stroke-width="3"/>
-        </g>
-        <g id="legs">
-            <rect class="dog" x="40" y="130" width="20" height="40" stroke="black" stroke-width="3" fill="#e26b09"/>
-            <rect class="dog" x="140" y="130" width="20" height="40" stroke="black" stroke-width="3" fill="#e26b09"/>
-            <rect x="70" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#e26b09"/>
-            <rect class="dog" x="110" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#e26b09"/>
-            <g id="claws">
-                <polygon class="dog" points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
-                <polygon class="dog" points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
-                <polygon class="dog" points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
-                <polygon class="dog" points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
-
-                <polygon class="dog" points="74,180, 74,175 76,173 78,175, 78,180" stroke="black"/>
-                <polygon class="dog" points="82,180, 82,175 84,173 86,175, 86,180" stroke="black"/>
-                <polygon class="dog" points="114,180, 114,175 116,173 118,175, 118,180" stroke="black"/>
-                <polygon class="dog" points="122,180, 122,175 124,173 126,175, 126,180" stroke="black"/>
+                    <polygon class="dog" points="74,180, 74,175 76,173 78,175, 78,180" stroke="black"/>
+                    <polygon class="dog" points="82,180, 82,175 84,173 86,175, 86,180" stroke="black"/>
+                    <polygon class="dog" points="114,180, 114,175 116,173 118,175, 118,180" stroke="black"/>
+                    <polygon class="dog" points="122,180, 122,175 124,173 126,175, 126,180" stroke="black"/>
+                </g>
+            </g>
+            <g id="face">
+                <rect class="dog" x="89" y="45" width="23" height="15" stroke="black" stroke-width="3" fill="#e26bff"/>
+                <circle class="dog" cx="80" cy="40" r="4"/>
+                <circle class="dog" cx="120" cy="40" r="4"/>
+                <polyline class="dog" points="70,65  78,75  120,75 128,65 " fill="#e26b09" stroke="black" stroke-width="3"/>
+                <line class="dog" x1="103" y1="75" x2="99" y2="60"  stroke="black" stroke-width="3"/>
             </g>
         </g>
-        <g id="face">
-            <rect class="dog" x="89" y="45" width="23" height="15" stroke="black" stroke-width="3" fill="#e26bff"/>
-            <circle class="dog" cx="80" cy="40" r="4"/>
-            <circle class="dog" cx="120" cy="40" r="4"/>
-            <polyline class="dog" points="70,65  78,75  120,75 128,65 " fill="#e26b09" stroke="black" stroke-width="3"/>
-            <line class="dog" x1="103" y1="75" x2="99" y2="60"  stroke="black" stroke-width="3"/>
-        </g>
-    </g>
-</svg>
+    </svg>
 
-<svg width="200" height="200" class="animal cat" id="cat">
+    <svg width="200" height="200" class="animal cat" id="cat">
 
-<g id="main">
-    <polygon class="cat" points="60,20 80,40 120,40 140,20 140,170 60,170" stroke="black" stroke-width="3" fill="#CCCCCC"/>
-
-</g>
-<g id="face">
-    <polygon class="cat" points="100,80 90,65 110,65" fill="#e26bFF" stroke="black" stroke-width="3"/>
-    <polyline class="cat" points="70,85  78,95  120,95 128,85" fill="#CCCCCC" stroke="black" stroke-width="3"/>
-    <line class="cat" x1="103" y1="95" x2="100" y2="80"  stroke="black" stroke-width="3"/>
-    <circle class="cat" cx="80" cy="60" r="4"/>
-    <circle class="cat" cx="120" cy="60" r="4"/>
-</g>
-
-<g id="legs">
-
-    <rect class="cat" x="40" y="140" width="20" height="30" stroke="black" stroke-width="3" fill="#CCCCCC"/>
-    <rect class="cat" x="140" y="140" width="20" height="30" stroke="black" stroke-width="3" fill="#CCCCCC"/>
-    <rect class="cat" x="70" y="160" width="20" height="20" stroke="black" stroke-width="3" fill="#CCCCCC"/>
-    <rect class="cat" x="110" y="160" width="20" height="20" stroke="black" stroke-width="3" fill="#CCCCCC"/>
-    <polygon class="cat" points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
-    <polygon class="cat" points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
-    <polygon class="cat" points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
-    <polygon class="cat" points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
-
-    <polygon class="cat" points="74,180, 74,175 76,173 78,175, 78,180" stroke="black"/>
-    <polygon class="cat" points="82,180, 82,175 84,173 86,175, 86,180" stroke="black"/>
-    <polygon class="cat" points="114,180, 114,175 116,173 118,175, 118,180" stroke="black"/>
-    <polygon class="cat" points="122,180, 122,175 124,173 126,175, 126,180" stroke="black"/>
-</g>
-
-</svg>
-
-<svg width="200" height="200" class="animal bunny" id="bunny">
     <g id="main">
-        <rect class="bunny" x="60" y="20" width="80" height="150" stroke="black" stroke-width="3" style="fill:#EEEEEE"/>
-        <rect class="bunny" x="78" y="110" width="44" height="55" style="fill:pink"/>
-    </g>
-    <g id="bunnyears">
-        <polygon class="bunny" points="60,20 30,20, 30,100" stroke="black" stroke-width="3"/>
-        <polygon class="bunny" points="140,20 170,20, 170,100" stroke="black" stroke-width="3"/>
-    </g>
+        <polygon class="cat" points="60,20 80,40 120,40 140,20 140,170 60,170" stroke="black" stroke-width="3" fill="#CCCCCC"/>
 
+    </g>
     <g id="face">
-
-        <polygon class="bunny" points="100,69 85,48 115,48" fill="#e26bFF" stroke="black" stroke-width="3"/>
-        <polyline class="bunny" points="70,68  78,78  120,78 128,68" fill="#EEEEEE" stroke="black" stroke-width="3"/>
-        <line class="bunny" x1="100" y1="68" x2="100" y2="78"  stroke="black" stroke-width="3"/>
-        <circle class="bunny" cx="90" cy="40" r="4"/>
-        <circle class="bunny" cx="110" cy="40" r="4"/>
-        <rect class="bunny" x="90", y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
-        <rect class="bunny" x="100", y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
+        <polygon class="cat" points="100,80 90,65 110,65" fill="#e26bFF" stroke="black" stroke-width="3"/>
+        <polyline class="cat" points="70,85  78,95  120,95 128,85" fill="#CCCCCC" stroke="black" stroke-width="3"/>
+        <line class="cat" x1="103" y1="95" x2="100" y2="80"  stroke="black" stroke-width="3"/>
+        <circle class="cat" cx="80" cy="60" r="4"/>
+        <circle class="cat" cx="120" cy="60" r="4"/>
     </g>
+
     <g id="legs">
-        <rect class="bunny" x="40" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
-        <rect class="bunny" x="140" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
-        <rect class="bunny" x="80" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#EEEEEE"/>
-        <rect class="bunny" x="100" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#EEEEEE"/>
-        <g id="claws">
-            <polygon class="bunny" points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
-            <polygon class="bunny" points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
-            <polygon class="bunny" points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
-            <polygon class="bunny" points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
 
-            <polygon class="bunny" points="84,180, 84,175 86,173 88,175, 88,180" stroke="black"/>
-            <polygon class="bunny" points="92,180, 92,175 94,173 96,175, 96,180" stroke="black"/>
-            <polygon class="bunny" points="104,180, 104,175 106,173 108,175, 108,180" stroke="black"/>
-            <polygon class="bunny" points="112,180, 112,175 114,173 116,175, 116,180" stroke="black"/>
-        </g>
+        <rect class="cat" x="40" y="140" width="20" height="30" stroke="black" stroke-width="3" fill="#CCCCCC"/>
+        <rect class="cat" x="140" y="140" width="20" height="30" stroke="black" stroke-width="3" fill="#CCCCCC"/>
+        <rect class="cat" x="70" y="160" width="20" height="20" stroke="black" stroke-width="3" fill="#CCCCCC"/>
+        <rect class="cat" x="110" y="160" width="20" height="20" stroke="black" stroke-width="3" fill="#CCCCCC"/>
+        <polygon class="cat" points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
+        <polygon class="cat" points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
+        <polygon class="cat" points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
+        <polygon class="cat" points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
+
+        <polygon class="cat" points="74,180, 74,175 76,173 78,175, 78,180" stroke="black"/>
+        <polygon class="cat" points="82,180, 82,175 84,173 86,175, 86,180" stroke="black"/>
+        <polygon class="cat" points="114,180, 114,175 116,173 118,175, 118,180" stroke="black"/>
+        <polygon class="cat" points="122,180, 122,175 124,173 126,175, 126,180" stroke="black"/>
     </g>
 
-</svg>
+    </svg>
+
+    <svg width="200" height="200" class="animal bunny" id="bunny">
+        <g id="main">
+            <rect class="bunny" x="60" y="20" width="80" height="150" stroke="black" stroke-width="3" style="fill:#EEEEEE"/>
+            <rect class="bunny" x="78" y="110" width="44" height="55" style="fill:pink"/>
+        </g>
+        <g id="bunnyears">
+            <polygon class="bunny" points="60,20 30,20, 30,100" stroke="black" stroke-width="3"/>
+            <polygon class="bunny" points="140,20 170,20, 170,100" stroke="black" stroke-width="3"/>
+        </g>
+
+        <g id="face">
+
+            <polygon class="bunny" points="100,69 85,48 115,48" fill="#e26bFF" stroke="black" stroke-width="3"/>
+            <polyline class="bunny" points="70,68  78,78  120,78 128,68" fill="#EEEEEE" stroke="black" stroke-width="3"/>
+            <line class="bunny" x1="100" y1="68" x2="100" y2="78"  stroke="black" stroke-width="3"/>
+            <circle class="bunny" cx="90" cy="40" r="4"/>
+            <circle class="bunny" cx="110" cy="40" r="4"/>
+            <rect class="bunny" x="90", y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
+            <rect class="bunny" x="100", y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
+        </g>
+        <g id="legs">
+            <rect class="bunny" x="40" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
+            <rect class="bunny" x="140" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
+            <rect class="bunny" x="80" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#EEEEEE"/>
+            <rect class="bunny" x="100" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#EEEEEE"/>
+            <g id="claws">
+                <polygon class="bunny" points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
+                <polygon class="bunny" points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
+                <polygon class="bunny" points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>
+                <polygon class="bunny" points="152,170, 152,165 154,163 156,165, 156,170" stroke="black"/>
+
+                <polygon class="bunny" points="84,180, 84,175 86,173 88,175, 88,180" stroke="black"/>
+                <polygon class="bunny" points="92,180, 92,175 94,173 96,175, 96,180" stroke="black"/>
+                <polygon class="bunny" points="104,180, 104,175 106,173 108,175, 108,180" stroke="black"/>
+                <polygon class="bunny" points="112,180, 112,175 114,173 116,175, 116,180" stroke="black"/>
+            </g>
+        </g>
+
+    </svg>
 </div>
 
 <section id="petpreview">
@@ -244,19 +239,35 @@
     </svg>
 </section>
 <section id="coloroptions">
-    <input id="nose" class="colorpick" type="color" name="Nose colour">Nose colour</input>
-    <input id="body" class="colorpick" type="color" name="Body colour">Body colour</input>
-    <input id="claws" class="colorpick" type="color" name="Claw colour">Claw colour</input>
-    <input id="belly" class="colorpick" type="color" name="Belly colour">Belly colour</input>
-    <input id="ears" class="colorpick" type="color" name="Ear colour">Ear colour</input>
+    <div class="colorcontainer">
+        <input id="nose" class="colorpick" type="color" value="#ba5aed" name="Nose colour">
+        <label class="colourlabel" for="nose">Nose Colour</label>
+    </div>
+    <div class="colorcontainer">
+
+        <input id="body" class="colorpick" type="color" value="#c94e06" name="Body colour">
+        <label class="colourlabel" for="body">Body colour</label>
+    </div>
+    <div class="colorcontainer">
+        <input id="claws" class="colorpick" type="color" value="#000000" name="Claw colour">
+        <label class="colourlabel" for="claws">Claw Colour</label>
+    </div>
+    <div class="colorcontainer">
+        <input id="belly" class="colorpick" type="color" value="#cf5af2" name="Belly colour">
+        <label class="colourlabel" for="belly">Belly colour</label>
+    </div>
+    <div class="colorcontainer">
+        <input id="ears" class="colorpick" type="color" value="#000000" name="Ear colour">
+        <label class="colourlabel" for="ears">Ear colour</label>
+    </div>
 </section>
-<label>What would you like to name your pet?
-    <input id="petname" name="petname" type="text" minlength="2", maxlength="16">
-</label>
-
-<input id="postcreatereq", value="Create my pet!", type="submit">
-<p id="invalidText"></p>
-
-<a href="http://localhost:8080/pets/">click here to go to your pets</a>
+<div class="nameinput">
+        <p>My pet shall be named...</p>
+        <input id="petname" name="petname" type="text" minlength="2", maxlength="16">
+</div>
+<div id="createcontainer">
+    <input id="postcreatereq", value="Create my pet!", type="submit">
+</div>
+<a id="topets" href="http://localhost:8080/pets/">click here to go to your pets</a>
 
 </html>

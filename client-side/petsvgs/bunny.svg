@@ -1,30 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
     <svg xmlns="http://www.w3.org/2000/svg">
-        <g id="main">
-            <rect x="60" y="20" width="80" height="150" stroke="black" stroke-width="3" style="fill:#EEEEEE"/>
-            <rect x="78" y="110" width="44" height="55" style="fill:pink"/>
-        </g>
-        <g id="ears">
-            <polygon points="60,20 30,20, 30,100" stroke="black" stroke-width="3"/>
-            <polygon points="140,20 170,20, 170,100" stroke="black" stroke-width="3"/>
-        </g>
+        <g id="animal">
 
-        <g id="face">
+            <g id="main" class="bunnybody">
+                <rect x="60" y="20" width="80" height="150" stroke="black" stroke-width="3" style="fill:#EEEEEE"/>
+                <rect x="78" y="110" width="44" height="55" style="fill:pink"/>
+            </g>
+            <g id="ears">
+                <polygon points="60,20 30,20, 30,100" stroke="black" stroke-width="3"/>
+                <polygon points="140,20 170,20, 170,100" stroke="black" stroke-width="3"/>
+            </g>
 
-            <polygon points="100,69 85,48 115,48" fill="#e26bFF" stroke="black" stroke-width="3"/>
-            <polyline points="70,68  78,78  120,78 128,68" fill="#EEEEEE" stroke="black" stroke-width="3"/>
-            <line x1="100" y1="68" x2="100" y2="78" stroke="black" stroke-width="3"/>
-            <circle cx="90" cy="40" r="4"/>
-            <circle cx="110" cy="40" r="4"/>
-            <rect x="90" y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
-            <rect x="100" y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
-        </g>
-        <g id="legs">
-            <rect x="40" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
-            <rect x="140" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
-            <rect x="80" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#EEEEEE"/>
-            <rect x="100" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#EEEEEE"/>
-            <g id="claws">
+            <g id="face">
+
+   
+                
+                <line x1="100" y1="68" x2="100" y2="78" stroke="black" stroke-width="3"/>
+                <circle class="bunnyeyes" cx="90" cy="40" r="4"/>
+                <circle class="bunnyeyes" cx="110" cy="40" r="4"/>
+                <rect x="90" y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
+                <rect x="100" y="79" width="10" height="12" fill="#FFFFFF" stroke="black"/>
+            </g>
+            <g id="legs" class="bunnybody">
+                <polyline points="70,68  78,78  120,78 128,68" fill="#EEEEEE" stroke="black" stroke-width="3"/>
+                <rect x="40" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
+                <rect x="140" y="100" width="20" height="70" stroke="black" stroke-width="3" fill="#EEEEEE"/>
+                <rect x="80" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#EEEEEE"/>
+                <rect x="100" y="150" width="20" height="30" stroke="black" stroke-width="3" fill="#EEEEEE"/>
+        
+            </g>
+                <g class="bunnynose">
+                <polygon points="100,69 85,48 115,48" fill="#e26bFF" stroke="black" stroke-width="3"/>
+            </g>
+            <g id="claws" class="bunnyclaws">
                 <polygon points="44,170, 44,165 46,163 48,165, 48,170" stroke="black"/>
                 <polygon points="52,170, 52,165 54,163 56,165, 56,170" stroke="black"/>
                 <polygon points="144,170, 144,165 146,163 148,165, 148,170" stroke="black"/>

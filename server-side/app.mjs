@@ -26,10 +26,11 @@ async function createPetReq(req, res) {
   const account = PInt.readAccounts(req.body.id);
   if (account === undefined) {
     res.status(404).send('Invalid account.');
+    return;
   }
   const pet = await db.get('SELECT * FROM Pets WHERE accountId = ?', [req.body.name]);
   if (pet === undefined) {
-    PInt.createPet(req.body.id, req.body.name, req.body.animaltype, JSON.stringify(req.body.colors));
+    PInt.createPet(req.body.id, req.body.name, req.body.animaltype, JSON.stringify(req.body.colors), res);
   } else {
     res.status(403).send('A pet already exists with that name!');
   }

@@ -7,3 +7,74 @@
 .faliure {
   color: red
 }
+body {
+  background-color: #372f41;
+}
+.emphasis {
+  color: rgb(99, 0, 165)
+}
+.signup {
+  background-color: #5865F2;
+  border-radius: 1em;
+  display: flex;
+  width: 9em;
+  justify-content: center;
+  box-shadow: rgba(135, 8, 219, 0.8) 0px 8px 25px -15px;
+  padding: 0.5em;
+  border: 0;
+}
+.lb {
+  background-color: rgb(98, 0, 255);
+  border-radius: 1em;
+  display: flex;
+  width:11em;
+  justify-content: center;
+  box-shadow: rgba(0, 0, 0, 0.8) 0px 8px 25px -15px;
+  padding: 0.5em;
+  border: 0;
+  white-space: nowrap;
+}
+.title {
+  color: white;
+  text-align: center;
+  font-family: 'Trebuchet MS';
+
+}
+#loginbutton {
+  align-self: center;
+  display: flex;
+  white-space: nowrap;
+}
+main {
+  display: flex;
+  align-items: center;
+  flex-direction:column;
+}
+.petcontainer {
+  height: 200px;
+  width: 200px;
+  justify-content: center;
+  animation: 2s ease-in-out 0s scaleanim infinite
+}
+#buttoncontainer {
+  display: flex;
+  justify-content: center;
+  gap: 1em
+}
+#discordlogo {
+  margin-top: 3px;
+  margin-left: 3px;
+  width: 20em;
+
+}
+@keyframes scaleanim {
+  0% {transform: scale(1)}
+  50% {transform: scale(1.1)}; 
+  100% {transform: scale(1)}
+}
+#loginbutton:hover {
+  background-color: #4351ec;
+}
+#leaderboard:hover {
+  background-color: #5900ff;
+}

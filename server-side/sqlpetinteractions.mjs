@@ -57,14 +57,25 @@ export async function purchaseItem(accountId, itemName, res) {
   await db.run('UPDATE Accounts SET NP = ?, items = ? WHERE accountId = ?', [account.NP, JSON.stringify(account.items), accountId]);
   res.json(account);
 }
-export async function createPet(accountId, petName, type, colors) {
+export async function createPet(accountId, petName, type, colors, res) {
   const defaultLastInteract = Date.now() - hour * 2;
   const now = Date.now();
   const db = await connect;
   const duplicates = await db.get('SELECT * FROM Pets WHERE accountId = ? AND petName = ?', [accountId, petName]);
   if (duplicates !== undefined) {
-    console.log(`Pet already exists: ${duplicates}`);
+    res.status(403).send(`Pet already exists: ${JSON.stringify(duplicates)}`);
     return false;
+  }
+  if (petName.length < 3) {
+    res.status(403).send('Pet name too short.');
+    return;
+  }
+  const allowedCharacters = 'qwertyuiopasdfghjklzxcvbnm1234567890';
+  for (const char of petName) {
+    if (!allowedCharacters.includes(char)) {
+      res.staus(403).send('Invalid pet name.');
+      return;
+    }
   }
   await db.run('INSERT INTO Pets VALUES (:accountId, :petName, :dateCreated, :type, :cleanliness, :happiness, :hunger, :level, :XP, :rank, :last_updated, :last_feed_update, :last_play_update, :last_clean_update, :playCount, :timesPlayed, :timesCleaned, :timesFed, :dead, :diedAt, :deathReason, :colors)', {
     ':accountId': accountId,
@@ -90,6 +101,7 @@ export async function createPet(accountId, petName, type, colors) {
     ':deathReason': null,
     ':colors': colors,
   });
+  res.status(200).send('Pet created!');
 }
 export async function readAccounts(accountId = null) {
   const db = await connect;
@@ -159,11 +171,11 @@ export async function updatePets(accountId) {
     if (pet.hunger <= 0) {
       pet.dead = true;
       pet.diedAt = now;
-      pet.deaathReason = 'starvation';
+      pet.deathReason = 'starvation';
     } else if (pet.cleanliness && pet.fitness <= 0) {
       pet.dead = true;
       pet.diedAt = now;
-      pet.deathReason = 'care';
+      pet.deathReason = 'illness';
     }
     console.log(`last updated ${(now - pet.last_updated) / hour} hours ago`);
     db.run('UPDATE Pets SET hunger = ?, fitness = ?, cleanliness = ?, last_updated = ?, dead = ?, diedAt = ?, deathReason = ? WHERE accountId = ? AND petName = ?', pet.hunger, pet.fitness, pet.cleanliness, pet.last_updated, pet.dead, pet.diedAt, pet.deathReason, accountId, pet.petName);
@@ -287,23 +299,24 @@ export async function petSacrifice(accountId, petName, res) {
   const db = await connect;
   const pet = await getAccountPets(accountId, petName);
   if (pet.level <= MIN_SACRIFICE_LEVEL) {
-    res.status(403).send('Pet not high enough leveled to be sacrificed!')
-    return
+    res.status(403).send('Pet not high enough leveled to be sacrificed!');
+    return;
   } else if (pet.dead) {
-    res.status(403).send('Cannot sacrifice pet that is already dead! Jeez, how much did you hate it?')
-    return
-  } else if (pet.rank === 2){
-    res.status(403).send('Guilded pets are too cursed to be sacrificed.')
-    return
+    res.status(403).send('Cannot sacrifice pet that is already dead! Jeez, how much did you hate it?');
+    return;
+  } else if (pet.rank === 2) {
+    res.status(403).send('Guilded pets are too cursed to be sacrificed.');
+    return;
   }
   const qry = await db.get('SELECT items FROM Accounts WHERE accountId = ?', accountId);
   const items = JSON.parse(qry.items);
+  let count;
   if (items.pet_blood === undefined) {
-    items.pet_blood = 1;
+    count = 1;
   } else {
-    const count = Math.floor(pet.level / 5) - 2;
-    items.pet_blood += count
+    count = Math.floor(pet.level / 5) - 2;
   }
+  items.pet_blood += count;
   await db.run('UPDATE Accounts SET items = ? WHERE accountId = ?', JSON.stringify(items), accountId);
   await db.run('UPDATE Pets SET dead = ?, diedAt = ?, deathReason = ? WHERE petName = ? AND accountId = ?', true, Date.now(), 'sacrifice', petName, accountId);
   res.status(200).send(`${count} pet blood recieved from sacrificing ${petName}`);
@@ -312,6 +325,7 @@ export async function petSacrifice(accountId, petName, res) {
 export async function guildPet(accountId, petName, res) {
   const db = await connect;
   const pet = await getAccountPets(accountId, petName);
+  pet.level = 16;
   const account = await readAccounts(accountId);
   const items = JSON.parse(account.items);
   if (pet === undefined) {

@@ -82,7 +82,7 @@ async function updateMeters() {
   const guildColor = petStats.rank === 2 ? '#ff0000' : '#ffffff';
   if (petStats.rank !== 1) {
     document.querySelectorAll('.eyes').forEach(elem => {
-      elem.style = `fill: ${guildColor};`
+      elem.style = `fill: ${guildColor};`;
     });
   }
 
@@ -183,8 +183,8 @@ async function petClean() {
   cleanDialog.showModal();
 }
 async function sacrificePet() {
-  if (petStats.level > 15 || true) {
-    document.querySelector('#sacrificestatus').textContent = await sacrificePetReq()
+  if (petStats.level > 15) {
+    document.querySelector('#sacrificestatus').textContent = await sacrificePetReq();
   } else {
     document.querySelector('#sacrificestatus').textContent = 'pet not a high enough level';
   }
@@ -204,7 +204,7 @@ async function sacrificePetReq() {
 async function guildPetReq() {
   const response = await fetch('http://localhost:8080/pets/' + apiPath + '/guild', {
     method: 'POST',
-  })
+  });
   document.querySelector('#guildstatus').textContent = await response.text();
 }
 
@@ -408,16 +408,15 @@ function handleDrag(e) {
 }
 function handleDragEnter(e) {
   if (e.currentTarget.id === sacrificePetPreview.id) {
-    sacrificePetPreview.classList.add('killhighlight')
+    sacrificePetPreview.classList.add('killhighlight');
     return;
   }
   e.currentTarget.classList.add('over');
 }
 function handleDragLeave(e) {
   if (e.currentTarget.id === sacrificePetPreview.id) {
-    sacrificePetPreview.classList.remove('killhighlight')
-    
-    
+    sacrificePetPreview.classList.remove('killhighlight');
+
     return;
   }
   e.currentTarget.classList.remove('over');
@@ -425,7 +424,7 @@ function handleDragLeave(e) {
 function handleDragOver(e) {
   e.preventDefault();
   if (e.currentTarget.id === sacrificePetPreview.id) {
-    sacrificePetPreview.classList.add('killhighlight')
+    sacrificePetPreview.classList.add('killhighlight');
     return;
   }
   e.currentTarget.classList.add('over');
@@ -437,7 +436,7 @@ async function handleDrop(e) {
   const data = e.dataTransfer.getData('text/plain');
   console.log(data);
   if (data === 'knife') {
-    await sacrificePet()
+    await sacrificePet();
     return;
   }
   console.log(payload.owned[data]);
@@ -471,12 +470,12 @@ async function main() {
   playButton.addEventListener('click', startRandomGame);
   feedButton.addEventListener('click', petFeed);
   cleanButton.addEventListener('click', petClean);
-  guildButton.addEventListener('click', guildPetReq)
+  guildButton.addEventListener('click', guildPetReq);
   document.querySelector('#guildpetbutton').addEventListener('click', () => {
-    document.querySelector('#guilddialog').showModal()
-  })
+    document.querySelector('#guilddialog').showModal();
+  });
   sacrifice.addEventListener('click', () => {
-    sacrificeDialog.showModal()
+    sacrificeDialog.showModal();
   });
   higher.addEventListener('click', guess);
   lower.addEventListener('click', guess);
@@ -497,10 +496,10 @@ async function main() {
   });
   document.querySelector('#sacrificecancel').addEventListener('click', () => {
     sacrificeDialog.close();
-  })
+  });
   document.querySelector('#guildcancel').addEventListener('click', () => {
     guildDialog.close();
-  })
+  });
   // cleanSelectMenu.addEventListener('change', () => { handleSelections(confirmClean, cleanSelectMenu); });
   // feedSelectMenu.addEventListener('change', () => { handleSelections(confirmFeed, feedSelectMenu); });
   closeButton.addEventListener('click', closeDialog);
